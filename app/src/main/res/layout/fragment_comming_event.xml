@@ -1,0 +1,28 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#a5a5a5"
+    tools:context="com.example.dell.tourassistant.EventPackage.CommingEventFragment">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+        <TextView
+            android:id="@+id/comming_events_heading_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Your Comming Events"
+            android:textSize="20sp"
+            android:gravity="center"/>
+        <ListView
+            android:id="@+id/comming_event_LV"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+        </ListView>
+
+
+    </LinearLayout>
+</FrameLayout>

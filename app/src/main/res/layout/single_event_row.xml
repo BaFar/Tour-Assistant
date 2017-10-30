@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="10dp"
+    android:layout_marginBottom="10dp"
+    android:background="@drawable/bggradient"
+    android:layout_margin="5dp">
+
+    <TextView
+        android:id="@+id/event_destination_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="5dp"
+        android:text="Event Name"
+        android:textStyle="bold"
+        android:textSize="22sp"
+        android:textColor="#184264"
+        android:shadowColor="#918e8e"
+        android:shadowDx="-2"
+        android:shadowDy="2"
+        android:shadowRadius="5"/>
+
+    <TextView
+        android:textColor="#256089"
+        android:id="@+id/text_from"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="34dp"
+        android:layout_marginLeft="36dp"
+        android:layout_marginTop="20dp"
+        android:text="From"
+        android:textSize="18sp"
+        android:layout_below="@+id/event_destination_name"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentLeft="true"/>
+
+    <TextView
+        android:textColor="#256089"
+        android:id="@+id/textTo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="To"
+        android:textSize="18sp"
+        android:layout_above="@+id/event_from_date"
+        android:layout_alignStart="@+id/event_to_date"
+        android:layout_alignLeft="@id/event_to_date"/>
+
+    <TextView
+        android:id="@+id/event_budget"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:text="Estimated budget"
+        android:layout_below="@+id/event_to_date"
+        android:layout_centerHorizontal="true"
+        android:layout_alignStart="@+id/event_destination_name"
+        android:layout_alignLeft="@id/event_destination_name"
+        android:textColor="#fff"
+        android:layout_marginBottom="10dp"
+        android:textSize="16sp"/>
+
+    <TextView
+        android:textSize="16sp"
+        android:textColor="#fff"
+        android:id="@+id/event_from_date"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignStart="@+id/text_from"
+        android:layout_alignLeft="@id/text_from"
+        android:layout_below="@+id/text_from"
+        android:layout_marginTop="27dp"
+        android:text="29/09/2017" />
+
+    <TextView
+        android:textSize="16sp"
+        android:textColor="#fff"
+        android:id="@+id/event_to_date"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="08/10/2017"
+        android:layout_marginStart="14dp"
+        android:layout_marginLeft="14dp"
+        android:layout_alignBottom="@+id/event_from_date"
+        android:layout_toEndOf="@+id/event_destination_name"
+        android:layout_toRightOf="@id/event_destination_name"/>
+</RelativeLayout>

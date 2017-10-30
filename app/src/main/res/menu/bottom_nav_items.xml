@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/comming_event_menu"
+        android:title="Comming Events"
+        android:icon="@mipmap/ic_launcher"
+        />
+    <item
+        android:id="@+id/past_event_menu"
+        android:title="Past Events"
+        android:icon="@mipmap/ic_launcher"
+        />
+
+    <item
+        android:id="@+id/add_event_menu"
+        android:title="Add Event"
+        android:icon="@mipmap/ic_launcher" />
+</menu>

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="wrap_content"
+    android:layout_height="wrap_content">
+    <TextView
+        android:id="@+id/show_time"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="11 AM"
+        android:textSize="20sp"
+        android:gravity="center"
+        android:textColor="@color/forecastTextColor"/>
+    <ImageView
+        android:id="@+id/show_weatherType"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@mipmap/ic_launcher"/>
+    <TextView
+        android:id="@+id/show_temperature"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="@color/forecastTextColor"
+        android:textSize="20sp"
+        android:text="90"
+        android:gravity="center"/>
+
+</LinearLayout>

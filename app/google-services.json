@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "1009531846034",
+    "firebase_url": "https://tour-assistant-9dca7.firebaseio.com",
+    "project_id": "tour-assistant-9dca7",
+    "storage_bucket": "tour-assistant-9dca7.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1009531846034:android:1c6f76ea393f5c86",
+        "android_client_info": {
+          "package_name": "com.example.dell.tourassistant"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1009531846034-vrj7j7g84gb7ak6919g6psf2pnpeth5a.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.dell.tourassistant",
+            "certificate_hash": "8d3d2cf6e5d3006090950d28aae67f7425035ca0"
+          }
+        },
+        {
+          "client_id": "1009531846034-phmgkrm3sgl0trpufkgiv8st2d3u4v1b.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAn-HSzljTdSeI_qdBBiGqair9FkFsRMCU"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1009531846034-phmgkrm3sgl0trpufkgiv8st2d3u4v1b.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
