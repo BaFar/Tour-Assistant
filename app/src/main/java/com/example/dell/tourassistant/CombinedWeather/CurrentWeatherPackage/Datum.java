@@ -1,5 +1,5 @@
 
-package com.example.dell.tourassistant.WeatherPackage;
+package com.example.dell.tourassistant.CombinedWeather.CurrentWeatherPackage;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
@@ -44,7 +44,7 @@ public class Datum {
     private String windCdirFull;
     @SerializedName("slp")
     @Expose
-    private double slp;
+    private Integer slp;
     @SerializedName("state_code")
     @Expose
     private String stateCode;
@@ -53,7 +53,7 @@ public class Datum {
     private Double lat;
     @SerializedName("vis")
     @Expose
-    private double vis;
+    private Double vis;
     @SerializedName("h_angle")
     @Expose
     private Integer hAngle;
@@ -77,7 +77,7 @@ public class Datum {
     private Object precip;
     @SerializedName("dhi")
     @Expose
-    private double dhi;
+    private Double dhi;
     @SerializedName("elev_angle")
     @Expose
     private Integer elevAngle;
@@ -196,7 +196,7 @@ public class Datum {
         this.windCdirFull = windCdirFull;
     }
 
-    public double getSlp() {
+    public Integer getSlp() {
         return slp;
     }
 
@@ -220,11 +220,11 @@ public class Datum {
         this.lat = lat;
     }
 
-    public double getVis() {
+    public Double getVis() {
         return vis;
     }
 
-    public void setVis(Integer vis) {
+    public void setVis(Double vis) {
         this.vis = vis;
     }
 
@@ -284,11 +284,11 @@ public class Datum {
         this.precip = precip;
     }
 
-    public double getDhi() {
+    public Double getDhi() {
         return dhi;
     }
 
-    public void setDhi(Integer dhi) {
+    public void setDhi(Double dhi) {
         this.dhi = dhi;
     }
 

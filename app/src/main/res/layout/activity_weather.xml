@@ -1,91 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#214684"
-    tools:context="com.example.dell.tourassistant.FullWeather.WeatherActivity">
-
-
-    <TextView
-        android:id="@+id/show_current_temp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="45"
-        android:textSize="150sp"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentLeft="true"
-        />
-    <LinearLayout
-        android:id="@+id/show_current_date_max_min_temp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_alignParentLeft="true"
-        android:layout_above="@id/show_current_temp"
-        android:gravity="center">
-
-        <ImageView
-            android:id="@+id/show_max_temp_icon"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/ic_arrow_upward_black_24dp"/>
-        <TextView
-            android:id="@+id/show_current_date_max_temp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text=""
-            android:textColor="#fff"
-            android:textSize="18sp"/>
-        <ImageView
-            android:id="@+id/show_min_temp_icon"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/ic_arrow_downward_black_24dp"/>
-        <TextView
-            android:id="@+id/show_current_date_min_temp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text=""
-            android:textColor="#fff"
-            android:textSize="18sp"/>
-    </LinearLayout>
+    tools:context="com.example.dell.tourassistant.CombinedWeather.WeatherActivity">
 
     <LinearLayout
-        android:id="@+id/show_current_weather_type"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_alignParentLeft="true"
-        android:gravity="center"
-        android:layout_above="@id/show_current_date_max_min_temp">
-        <ImageView
-            android:id="@+id/show_current_weather_type_icon"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            />
-        <TextView
-            android:id="@+id/show_current_weather_type_text"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textColor="#fff"
-            android:text=""/>
+        android:id="@+id/weather_fragment_coontainer"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
     </LinearLayout>
-
-
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Details"
-        android:textAllCaps="false"
-        android:textColor="#fff"
-        android:background="#1f9355"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentTop="true"
-        android:layout_marginTop="20dp"
-        android:layout_marginLeft="10dp"
-
-        android:onClick="showWeatherDetails"/>
-
-</RelativeLayout>
+</LinearLayout>

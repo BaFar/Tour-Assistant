@@ -28,6 +28,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.dell.tourassistant.CombinedWeather.WeatherActivity;
 import com.example.dell.tourassistant.ExtraHelper;
 import com.example.dell.tourassistant.PlacePackage.PlaceActivity;
 import com.example.dell.tourassistant.R;
@@ -53,7 +54,7 @@ public class SingleEventFragment extends Fragment implements View.OnClickListene
     final int  PLACE_PICKER_REQUEST_CODE = 1;
     private EventInterface eventInterface;
     private Event event;
-    private TextView eventNameTV,fromDateTV,toDateTV,budgetTV,currentExpenseTV;
+    private TextView eventNameTV,fromDateTV,toDateTV,budgetTV,currentExpenseTV,remainingBudgetTV;
     private Button expenseListBtn,momentListBtn,addExpenseBtn,addMomentBtn,editBtn,deleteBtn,weatherBtn,nearByBtn;
     private ListView expenseLV,momentLV;
     private ProgressBar expenseProgress;
@@ -104,6 +105,7 @@ public class SingleEventFragment extends Fragment implements View.OnClickListene
         toDateTV = (TextView) v.findViewById(R.id.to_date);
         budgetTV = (TextView) v.findViewById(R.id.event_est_budget);
         currentExpenseTV = (TextView) v.findViewById(R.id.current_expense);
+        remainingBudgetTV = (TextView) v.findViewById(R.id.remaining_budget);
         expenseListBtn = (Button) v.findViewById(R.id.expense_listBtn);
         momentListBtn = (Button) v.findViewById(R.id.moment_listBtn);
         addExpenseBtn = (Button) v.findViewById(R.id.add_expenseBtn);
@@ -306,16 +308,20 @@ public class SingleEventFragment extends Fragment implements View.OnClickListene
 
 
 
-        eventNameTV.setText(event.getDestination());
-        fromDateTV.setText(event.getFromDate());
-        toDateTV.setText(event.getToDate());
-        budgetTV.setText(String.valueOf(event.getBudget()));
-        currentExpenseTV.setText(String.valueOf(event.getTotalExpense()));
+        eventNameTV.setText("Tour: "+event.getDestination());
+        fromDateTV.setText("From: "+event.getFromDate());
+        toDateTV.setText("To: "+event.getToDate());
+        budgetTV.setText("Est. Budget"+String.valueOf(event.getBudget()));
+        currentExpenseTV.setText("Expensed: "+String.valueOf(event.getTotalExpense())+"ƒ");
+        double remainingBudget = event.getBudget() - event.getTotalExpense();
+        remainingBudgetTV.setText("remaining: "+String.valueOf(remainingBudget)+"ƒ");
+
 
         //double f = event.getTotalExpense();
         //int  d = (int) f;
         expenseProgress.setMax(event.getBudget());
         expenseProgress.setProgress((int)event.getTotalExpense());
+        expenseProgress.setMinimumWidth(20);
 
         ArrayList<Expense> expenseList= new ArrayList<>();
         ArrayList<Moment> momentList= new ArrayList<>();
@@ -375,6 +381,7 @@ public class SingleEventFragment extends Fragment implements View.OnClickListene
                 startActivity(nearIntent);
                 break;
             case R.id.weather_place_Btn:
+                startActivity(new Intent(getActivity(), WeatherActivity.class).putExtra("event_lattitude",24.555).putExtra("event_longitude",94.7093));
                 break;
             default:
                 Toast.makeText(getActivity(), "Other place Clicked", Toast.LENGTH_SHORT).show();

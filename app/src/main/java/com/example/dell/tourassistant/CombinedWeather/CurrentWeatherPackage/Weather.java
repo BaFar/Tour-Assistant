@@ -1,5 +1,5 @@
 
-package com.example.dell.tourassistant.WeatherPackage;
+package com.example.dell.tourassistant.CombinedWeather.CurrentWeatherPackage;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;

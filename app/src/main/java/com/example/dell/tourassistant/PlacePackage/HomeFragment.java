@@ -1,24 +1,24 @@
-package com.example.dell.tourassistant.WeatherPackage;
+        package com.example.dell.tourassistant.PlacePackage;
 
-import android.content.Context;
-import android.content.SharedPreferences;
-import android.os.Bundle;
-import android.support.v4.app.Fragment;
-import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.ImageView;
-import android.widget.TextView;
-import android.widget.Toast;
+        import android.content.Context;
+        import android.content.SharedPreferences;
+        import android.os.Bundle;
+        import android.support.v4.app.Fragment;
+        import android.util.Log;
+        import android.view.LayoutInflater;
+        import android.view.View;
+        import android.view.ViewGroup;
+        import android.widget.Button;
+        import android.widget.ImageView;
+        import android.widget.TextView;
+        import android.widget.Toast;
 
 
-import com.example.dell.tourassistant.R;
+        import com.example.dell.tourassistant.R;
 
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
+        import retrofit2.Call;
+        import retrofit2.Callback;
+        import retrofit2.Response;
 
 
 public class HomeFragment extends Fragment implements View.OnClickListener{
@@ -26,13 +26,13 @@ public class HomeFragment extends Fragment implements View.OnClickListener{
 
     private NearByListener nearByListener;
 
-   private WeatherApi weatherApi;
+
     private TextView tempTV, placeNameTV, weatherTypeTV;
     private ImageView weatherIconIV;
     private Button foodBtn,resturantBtn,hotelBtn,hospitalBtn,atmBtn,policeBtn;
     private String currentLat=null;
     private String currentLon=null;
-   // private double currentLon=0;
+    // private double currentLon=0;
 
     public HomeFragment() {
         // Required empty public constructor
@@ -63,10 +63,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener{
         currentLon = preferences.getString("currentLon",null);
 
 
-        tempTV = (TextView) getActivity().findViewById(R.id.showTemparature);
-        placeNameTV = (TextView) getActivity().findViewById(R.id.placeName);
-        weatherTypeTV = (TextView) getActivity().findViewById(R.id.weatherType);
-        weatherIconIV = (ImageView) getActivity().findViewById(R.id.weatherIcon);
+
         foodBtn = (Button) getActivity().findViewById(R.id.catagoryFood);
         resturantBtn = (Button) getActivity().findViewById(R.id.catagoryResturant);
         hotelBtn = (Button) getActivity().findViewById(R.id.catagoryHotel);
@@ -80,7 +77,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener{
         hospitalBtn.setOnClickListener(this);
         atmBtn.setOnClickListener(this);
         policeBtn.setOnClickListener(this);
-        collectCurrentWeather();
+
 
     }
 
@@ -91,50 +88,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener{
         super.onPause();
     }
 
-    private void collectCurrentWeather() {
 
-        String lat="23.4825";
-        String lon = "90.8723";
-        if (currentLat!=null && currentLon!=null){
-            lat = String.valueOf(currentLat);
-            lon = String.valueOf(currentLon);
-        }
-
-        String url = "current?&lat="+lat+"&lon="+lon+"&key=21580262673342e28e1c87639965a4e8";
-        weatherApi = RetrofitWeatherClient.getRetrofitClient().create(WeatherApi.class);
-        Call<Wether> weatherCall = weatherApi.getWeatherInfo(url);
-        weatherCall.enqueue(new Callback<Wether>() {
-            @Override
-            public void onResponse(Call<Wether> call, Response<Wether> response) {
-                if (response.code() == 200) {
-                    Toast.makeText(getActivity(), "Data receivec from weather", Toast.LENGTH_SHORT).show();
-                    Toast.makeText(getActivity(), "" + response.body().getData().get(0).getCityName(), Toast.LENGTH_SHORT).show();
-                    Datum weatherData = response.body().getData().get(0);
-
-                    String placeName = weatherData.getCityName();
-                    double temp = weatherData.getTemp();
-                    Weather weather = weatherData.getWeather();
-                    String weatherTypeCode = weather.getCode();
-                    String weatherType = weather.getDescription();
-
-                    weatherIconIV.setImageResource(getIcon(weatherTypeCode));
-                    placeNameTV.setText(placeName);
-                    weatherTypeTV.setText(weatherType);
-                    tempTV.setText(String.valueOf(temp) + (char) 0x00B0);
-
-
-                } else {
-                    Toast.makeText(getActivity(), "bed response", Toast.LENGTH_SHORT).show();
-                }
-            }
-
-            @Override
-            public void onFailure(Call<Wether> call, Throwable t) {
-                Log.e("call", "" + t.getMessage());
-                Toast.makeText(getActivity(), "" + t.getMessage(), Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
 
     @Override
     public void onClick(View v) {
@@ -184,7 +138,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener{
     }
 
     public interface NearByListener{
-         void showNearBy(String catagory);
+        void showNearBy(String catagory);
     }
 
 
@@ -238,3 +192,4 @@ public class HomeFragment extends Fragment implements View.OnClickListener{
 
     }
 }
+

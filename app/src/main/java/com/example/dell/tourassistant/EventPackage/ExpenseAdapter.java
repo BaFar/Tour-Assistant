@@ -33,10 +33,12 @@ public class ExpenseAdapter extends ArrayAdapter<Expense> {
         LayoutInflater inflater = (LayoutInflater) context.getSystemService(context.LAYOUT_INFLATER_SERVICE);
         convertView = inflater.inflate(R.layout.expense_row,parent,false);
 
-        TextView purposeTV = (TextView) convertView.findViewById(R.id.note_text);
-        TextView expenseAmountTV= (TextView) convertView.findViewById(R.id.note_value);
-        purposeTV.setText(expenseList.get(position).getExpensePurpose());
-        expenseAmountTV.setText(String.valueOf(expenseList.get(position).getExpenseAmount()));
+        TextView purposeTV = (TextView) convertView.findViewById(R.id.expense_purpose);
+        TextView expenseAmountTV= (TextView) convertView.findViewById(R.id.expense_amount);
+        TextView expenseDateTime = (TextView) convertView.findViewById(R.id.expense_date);
+        purposeTV.setText("Purpose: "+expenseList.get(position).getExpensePurpose());
+        expenseAmountTV.setText("Amount: "+String.valueOf(expenseList.get(position).getExpenseAmount()));
+        expenseDateTime.setText("Time: "+expenseList.get(position).getExpenseTime());
         return convertView;
     }
 }

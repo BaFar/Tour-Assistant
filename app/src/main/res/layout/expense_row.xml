@@ -5,16 +5,22 @@
     android:layout_margin="5dp"
     android:background="#bccfd6">
     <TextView
-        android:id="@+id/note_text"
+        android:id="@+id/expense_purpose"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="7"
         android:text=""
         android:layout_marginRight="5dp"/>
     <TextView
-        android:id="@+id/note_value"
+        android:id="@+id/expense_amount"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="3"/>
+    <TextView
+        android:id="@+id/expense_date"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="5"
+        android:text=""/>
 
 </LinearLayout>

@@ -1,12 +1,11 @@
 
-package com.example.dell.tourassistant.WeatherPackage;
+package com.example.dell.tourassistant.CombinedWeather.CurrentWeatherPackage;
 
+import java.util.List;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-import java.util.List;
-
-public class Wether {
+public class CurrentWeather {
 
     @SerializedName("data")
     @Expose

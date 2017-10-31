@@ -2,7 +2,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.example.dell.tourassistant.WeatherPackage.HomeFragment">
+    tools:context="com.example.dell.tourassistant.PlacePackage.HomeFragment">
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -62,48 +62,7 @@
                 android:layout_weight="1"
                 android:text="ATM Booth"/>
         </LinearLayout>
-        <RelativeLayout
-            android:id="@+id/weatherBlock"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:layout_alignParentLeft="true">
-            <ImageView
-                android:id="@+id/weatherIcon"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@mipmap/ic_launcher"
-                android:layout_alignParentLeft="true"/>
-            <TextView
-                android:id="@+id/placeName"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Dhaka"
-                android:textSize="20sp"
-                android:layout_alignTop="@id/weatherIcon"
-                android:layout_toEndOf="@id/weatherIcon"
-                />
-            <TextView
-                android:id="@+id/weatherType"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="rainy"
-                android:layout_alignBottom="@id/weatherIcon"
-                android:layout_toEndOf="@id/weatherIcon"
-                android:textSize="20sp"/>
-            <TextView
-                android:id="@+id/showTemparature"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="33"
-                android:textSize="25sp"
-                android:layout_alignParentRight="true"
-                android:layout_centerVertical="true"
 
-                />
-
-
-        </RelativeLayout>
 
     </RelativeLayout>
 

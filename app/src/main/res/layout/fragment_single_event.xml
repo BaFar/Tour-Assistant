@@ -87,9 +87,14 @@
                 android:textSize="16dp"
                 android:layout_weight="1"
                 android:id="@+id/current_expense"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:text="Expensed: 500taka" />
+                android:text="Expensed: 500ƒ" />
+            <TextView
+                android:id="@+id/remaining_budget"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"/>
         </LinearLayout>
 
 
