@@ -12,6 +12,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.dell.tourassistant.CombinedWeather.CurrentWeatherPackage.CurrentWeather;
+import com.example.dell.tourassistant.CombinedWeather.CurrentWeatherPackage.CurrentWeatherClient;
 import com.example.dell.tourassistant.CombinedWeather.CurrentWeatherPackage.Datum;
 import com.example.dell.tourassistant.ExtraHelper;
 import com.example.dell.tourassistant.R;

@@ -5,9 +5,66 @@
     tools:context="com.example.dell.tourassistant.CombinedWeather.ForecastFragment">
 
     <!-- TODO: Update blank fragment layout -->
-    <TextView
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
+        android:background="#6870f5"
+        android:layout_margin="10dp"
+        android:paddingTop="15dp"
+        android:paddingBottom="15dp"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp">
+
+        <TextView
+            android:id="@+id/show_text_forecast"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Forecast"
+            android:textSize="22sp"
+            android:textColor="#ffffff"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentTop="true"
+            />
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/show_forecast_per_hour"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_below="@id/show_text_forecast"
+            android:layout_marginBottom="20dp">
+
+        </android.support.v7.widget.RecyclerView>
+
+        <ListView
+            android:id="@+id/show_forecast_per_day"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_alignParentLeft="true"
+            android:layout_below="@id/show_forecast_per_hour">
+
+        </ListView>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentLeft="true">
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="5d"
+                android:textAllCaps="false"
+                android:onClick="showFiveday"/>
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="10d"
+                android:textAllCaps="false"
+                android:onClick="showTenDay"/>
+        </LinearLayout>
+
+
+    </RelativeLayout>
 
 </FrameLayout>

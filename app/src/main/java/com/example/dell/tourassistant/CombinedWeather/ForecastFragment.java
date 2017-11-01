@@ -2,12 +2,31 @@ package com.example.dell.tourassistant.CombinedWeather;
 
 
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ListView;
+import android.widget.Toast;
 
+import com.example.dell.tourassistant.CombinedWeather.DailyWeather.DailyForecastAdapter;
+import com.example.dell.tourassistant.CombinedWeather.DailyWeather.DailyWeather;
+import com.example.dell.tourassistant.CombinedWeather.DailyWeather.DailyWeatherClient;
+import com.example.dell.tourassistant.CombinedWeather.HourlyWeather.Datum;
+import com.example.dell.tourassistant.CombinedWeather.HourlyWeather.HourlyForecastAdapter;
+import com.example.dell.tourassistant.CombinedWeather.HourlyWeather.HourlyWeather;
+import com.example.dell.tourassistant.CombinedWeather.HourlyWeather.HourlyWeatherClient;
 import com.example.dell.tourassistant.R;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -20,11 +39,153 @@ public class ForecastFragment extends Fragment {
     }
 
 
+    private double lat,lon;
+    private List<Datum> hourlyDataList;
+    private List<com.example.dell.tourassistant.CombinedWeather.DailyWeather.Datum> dailyDataList;
+    private RecyclerView hourlyRV;
+    private ListView dailyLV;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_forecast, container, false);
+        View view =  inflater.inflate(R.layout.fragment_forecast, container, false);
+        hourlyRV = (RecyclerView) view.findViewById(R.id.show_forecast_per_hour);
+        dailyLV = (ListView) view.findViewById(R.id.show_forecast_per_day);
+
+        hourlyDataList = new ArrayList<>();
+        dailyDataList = new ArrayList<>();
+
+        /*later work
+        * Here collect lat and lon
+        * then remove comment
+        *
+        * */
+
+
+        collectHourlyWeather(lat,lon);
+        collectDailyWeather(lat,lon);
+        return view;
     }
 
+    private void collectDailyWeather(double lat, double lon) {
+        String subUrl = "daily?key=21580262673342e28e1c87639965a4e8&lat="+lat+"&lon="+lon;
+        DailyWeatherClient dailyWeatherClient = DailyWeatherClient.dailyRetrofitClient.create(DailyWeatherClient.class);
+        Call<DailyWeather> dwCall = dailyWeatherClient.getDailyWeather(subUrl);
+        dwCall.enqueue(new Callback<DailyWeather>() {
+            @Override
+            public void onResponse(Call<DailyWeather> call, Response<DailyWeather> response) {
+                if(response.code()==200){
+                    Toast.makeText(getActivity(), "200 OK", Toast.LENGTH_SHORT).show();
+                    dailyDataList =  response.body().getData();
+
+                }
+                else if(response.code()==304){
+                    Toast.makeText(getActivity(), "304 Not Modified", Toast.LENGTH_SHORT).show();
+
+                }else if(response.code()==400){
+                    Toast.makeText(getActivity(), "400 Bed Request", Toast.LENGTH_SHORT).show();
+
+                }
+                else if(response.code()==401){
+                    Toast.makeText(getActivity(), "401 Unauthorised", Toast.LENGTH_SHORT).show();
+
+                }else if(response.code()==403){
+                    Toast.makeText(getActivity(), "403 Forbidden", Toast.LENGTH_SHORT).show();
+
+                }else if(response.code()==404){
+                    Toast.makeText(getActivity(), "404 Not Found", Toast.LENGTH_SHORT).show();
+
+                }else if(response.code()==409){
+                    Toast.makeText(getActivity(), "409 Conflict", Toast.LENGTH_SHORT).show();
+
+                }else if(response.code()==500){
+                    Toast.makeText(getActivity(), "500 Internal Servar Error", Toast.LENGTH_SHORT).show();
+
+                }
+                else {
+                    Toast.makeText(getActivity(), "Something Wrong", Toast.LENGTH_SHORT).show();
+                }
+
+            }
+
+            @Override
+            public void onFailure(Call<DailyWeather> call, Throwable t) {
+
+            }
+        });
+    }
+
+    private void collectHourlyWeather(double lat, double lon) {
+
+        String subUrl = "hourly?key=21580262673342e28e1c87639965a4e8&lat="+lat+"&lon="+lon;
+        HourlyWeatherClient hourlyWeatherClient= HourlyWeatherClient.hourlyRetrofitClient.create(HourlyWeatherClient.class);
+        Call<HourlyWeather> hwCall = hourlyWeatherClient.getHourlyWeather(subUrl);
+        hwCall.enqueue(new Callback<HourlyWeather>() {
+            @Override
+            public void onResponse(Call<HourlyWeather> call, Response<HourlyWeather> response) {
+
+                if(response.code()==200){
+                    Toast.makeText(getActivity(), "200 OK", Toast.LENGTH_SHORT).show();
+                    hourlyDataList = response.body().getData();
+
+                }
+                else if(response.code()==304){
+                    Toast.makeText(getActivity(), "304 Not Modified", Toast.LENGTH_SHORT).show();
+
+                }else if(response.code()==400){
+                    Toast.makeText(getActivity(), "400 Bed Request", Toast.LENGTH_SHORT).show();
+
+                }
+                else if(response.code()==401){
+                    Toast.makeText(getActivity(), "401 Unauthorised", Toast.LENGTH_SHORT).show();
+
+                }else if(response.code()==403){
+                    Toast.makeText(getActivity(), "403 Forbidden", Toast.LENGTH_SHORT).show();
+
+                }else if(response.code()==404){
+                    Toast.makeText(getActivity(), "404 Not Found", Toast.LENGTH_SHORT).show();
+
+                }else if(response.code()==409){
+                    Toast.makeText(getActivity(), "409 Conflict", Toast.LENGTH_SHORT).show();
+
+                }else if(response.code()==500){
+                    Toast.makeText(getActivity(), "500 Internal Servar Error", Toast.LENGTH_SHORT).show();
+
+                }
+                else {
+                    Toast.makeText(getActivity(), "Something Wrong", Toast.LENGTH_SHORT).show();
+                }
+
+
+
+
+            }
+
+            @Override
+            public void onFailure(Call<HourlyWeather> call, Throwable t) {
+
+            }
+        });
+    }
+
+    @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+
+
+        DailyForecastAdapter dailyAdapter = new DailyForecastAdapter(getActivity(),dailyDataList);
+        dailyLV.setAdapter(dailyAdapter);
+        HourlyForecastAdapter hourlyForecastAdapter = new HourlyForecastAdapter(getActivity(),hourlyDataList);
+        LinearLayoutManager llm = new LinearLayoutManager(getActivity());
+        llm.setOrientation(LinearLayoutManager.HORIZONTAL);
+        hourlyRV.setLayoutManager(llm);
+        hourlyRV.setAdapter(hourlyForecastAdapter);
+
+
+
+
+
+
+    }
 }

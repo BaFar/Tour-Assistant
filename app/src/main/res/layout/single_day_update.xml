@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal" android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    >
+    <TextView
+        android:id="@+id/show_day"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:text="sunday"
+        android:textSize="20sp"
+        android:textColor="@color/forecastTextColor"
+        />
+    <ImageView
+        android:id="@+id/show_weather_icon"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:src="@mipmap/ic_launcher"/>
+    <TextView
+        android:id="@+id/show_high_temp"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:text="85"
+        android:textSize="20sp"
+        android:textColor="@color/forecastTextColor"
+        android:gravity="center"/>
+    <TextView
+        android:id="@+id/show_low_temp"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:text="60"
+        android:textSize="20sp"
+        android:textColor="@color/forecastTextColor"
+        android:gravity="center"/>
+
+</LinearLayout>

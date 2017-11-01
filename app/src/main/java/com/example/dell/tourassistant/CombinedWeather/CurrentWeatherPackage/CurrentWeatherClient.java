@@ -1,4 +1,4 @@
-package com.example.dell.tourassistant.CombinedWeather;
+package com.example.dell.tourassistant.CombinedWeather.CurrentWeatherPackage;
 
 import com.example.dell.tourassistant.CombinedWeather.CurrentWeatherPackage.CurrentWeather;
 
