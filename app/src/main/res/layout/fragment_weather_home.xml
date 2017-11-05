@@ -7,78 +7,68 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
+
         <TextView
             android:id="@+id/show_current_temp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="45"
-            android:textSize="150sp"
             android:layout_alignParentBottom="true"
             android:layout_alignParentLeft="true"
-            />
+            android:text="45"
+            android:textSize="150sp" />
 
 
         <LinearLayout
             android:id="@+id/show_current_weather_type"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
+            android:layout_above="@id/show_current_temp"
             android:layout_alignParentLeft="true"
             android:gravity="center"
-            android:layout_above="@id/show_current_temp"
-            >
+            android:orientation="horizontal">
+
             <ImageView
                 android:id="@+id/show_current_weather_type_icon"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@mipmap/ic_launcher"
-                />
+                android:src="@mipmap/ic_launcher" />
+
             <TextView
                 android:id="@+id/show_current_weather_type_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textColor="#fff"
-                android:text="Cloudy"/>
+                android:text="Cloudy"
+                android:textColor="#fff" />
+
             <TextView
                 android:id="@+id/show_sunrise"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textColor="#fff"
-                android:text="Sunrise"/>
+                android:text="Sunrise"
+                android:textColor="#fff" />
+
             <TextView
                 android:id="@+id/show_sunset"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textColor="#fff"
-                android:text="Sunset"/>
+                android:text="Sunset"
+                android:textColor="#fff" />
 
             <TextView
                 android:id="@+id/show_place_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Dhaka Kawran Bazar"
-                />
+                android:text="Dhaka Kawran Bazar" />
+
             <TextView
                 android:id="@+id/show_date_time"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="29/10/17: 10:30PM"/>
+                android:text="29/10/17: 10:30PM" />
         </LinearLayout>
 
 
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Details"
-            android:textAllCaps="false"
-            android:textColor="#fff"
-            android:background="#1f9355"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentTop="true"
-            android:layout_marginTop="20dp"
-            android:layout_marginLeft="10dp"
 
-            android:onClick="showWeatherDetails"/>
 
     </RelativeLayout>
 </FrameLayout>

@@ -168,4 +168,7 @@ public class WeatherHomeFragment extends Fragment {
 
 
     }
+    public interface detailsInterface{
+        public void detailsContainer(String cityName, double temp, String dateTime);
+    }
 }

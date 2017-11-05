@@ -4,13 +4,24 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     tools:context="com.example.dell.tourassistant.CombinedWeather.WeatherActivity">
 
     <LinearLayout
         android:id="@+id/weather_fragment_coontainer"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="8"
         android:orientation="vertical">
 
     </LinearLayout>
+    <android.support.design.widget.BottomNavigationView
+        android:background="#87f7d3"
+        android:id="@+id/weather_bottom_nav"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        app:menu="@menu/bottom_weather_nav">
+
+    </android.support.design.widget.BottomNavigationView>
 </LinearLayout>
