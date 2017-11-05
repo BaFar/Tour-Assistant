@@ -13,11 +13,13 @@ import android.view.View;
 
 import com.example.dell.tourassistant.R;
 
-public class WeatherActivity extends AppCompatActivity {
+public class WeatherActivity extends AppCompatActivity implements WeatherHomeFragment.DetailsInterface{
 
     private FragmentManager fm = getSupportFragmentManager();
     private FragmentTransaction ft = fm.beginTransaction();
     private BottomNavigationView navigationView;
+    private String cityName,dateTime;
+    private double temp;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -36,7 +38,7 @@ public class WeatherActivity extends AppCompatActivity {
         }
 
 
-        Bundle bundle= new Bundle();
+        final Bundle bundle= new Bundle();
         bundle.putDouble("lattitude",lat);
         bundle.putDouble("longitude",lon);
         WeatherHomeFragment weatherHomeFragment = new WeatherHomeFragment();
@@ -65,6 +67,10 @@ public class WeatherActivity extends AppCompatActivity {
                         break;
                     case R.id.nav_details:
                         fragment = new DetailsFragment();
+                        innerBundle.putString("cityname",cityName);
+                        innerBundle.putDouble("temperature",temp);
+                        innerBundle.putString("datetime",dateTime);
+                        fragment.setArguments(innerBundle);
                         break;
                     case R.id.nav_forecast:
                         innerBundle.putDouble("lattitude",iLat);
@@ -79,10 +85,14 @@ public class WeatherActivity extends AppCompatActivity {
             }
         });
 
-
-
     }
 
 
+    @Override
+    public void detailsContainer(String cityName, double temp, String dateTime) {
 
+        this.cityName = cityName;
+        this.temp = temp;
+        this.dateTime = dateTime;
+    }
 }

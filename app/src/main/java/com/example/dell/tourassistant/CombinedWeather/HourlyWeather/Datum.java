@@ -14,7 +14,7 @@ public class Datum {
     private Double rh;
     @SerializedName("wind_spd")
     @Expose
-    private Integer windSpd;
+    private double windSpd;
     @SerializedName("pop")
     @Expose
     private Integer pop;
@@ -71,7 +71,7 @@ public class Datum {
     private Double temp;
     @SerializedName("slp")
     @Expose
-    private Integer slp;
+    private double slp;
     @SerializedName("clouds")
     @Expose
     private Integer clouds;
@@ -95,7 +95,7 @@ public class Datum {
         this.rh = rh;
     }
 
-    public Integer getWindSpd() {
+    public double getWindSpd() {
         return windSpd;
     }
 
@@ -247,7 +247,7 @@ public class Datum {
         this.temp = temp;
     }
 
-    public Integer getSlp() {
+    public double getSlp() {
         return slp;
     }
 

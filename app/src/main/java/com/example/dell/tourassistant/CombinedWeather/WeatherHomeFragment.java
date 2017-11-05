@@ -50,6 +50,7 @@ public class WeatherHomeFragment extends Fragment {
     String dateTime;
     private CurrentWeather weather;
     private Double windspeed,visibility,temp,lat,lon;
+    private DetailsInterface dInterface;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -57,6 +58,7 @@ public class WeatherHomeFragment extends Fragment {
         // Inflate the layout for this fragment
         View view =  inflater.inflate(R.layout.fragment_weather_home, container, false);
 
+         dInterface = (DetailsInterface) getActivity();
         lat = 90.4786;
         lon = 23.81435;
         try{
@@ -67,8 +69,6 @@ public class WeatherHomeFragment extends Fragment {
         catch (Exception e){
             Log.e("whf","no values");
         }
-
-
 
 
         currentTempTV = (TextView)view.findViewById(R.id.show_current_temp);
@@ -145,6 +145,7 @@ public class WeatherHomeFragment extends Fragment {
 
     private void setDatatoView(CurrentWeather weather) {
 
+        temp = 8.0;
         Datum datum = weather.getData().get(0);
         cityName = datum.getCityName();
         dateTime = datum.getDatetime();
@@ -167,8 +168,14 @@ public class WeatherHomeFragment extends Fragment {
         weatherTypeIV.setImageResource(weatherIconCode);
 
 
+
+        dInterface.detailsContainer(cityName,temp,dateTime);
+
     }
-    public interface detailsInterface{
-        public void detailsContainer(String cityName, double temp, String dateTime);
+
+
+
+    public interface DetailsInterface{
+         void detailsContainer(String cityName, double temp, String dateTime);
     }
 }

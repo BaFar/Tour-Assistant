@@ -16,7 +16,7 @@ public interface DailyWeatherClient {
     Call<DailyWeather> getDailyWeather(
             @Url String url
     );
-    public static Retrofit dailyRetrofitClient = new Retrofit.Builder()
+    public static final Retrofit dailyRetrofitClient = new Retrofit.Builder()
             .baseUrl("https://api.weatherbit.io/v2.0/forecast/")
             .addConverterFactory(GsonConverterFactory.create())
             .build();

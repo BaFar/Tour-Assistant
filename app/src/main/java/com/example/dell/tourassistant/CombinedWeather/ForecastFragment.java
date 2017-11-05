@@ -6,6 +6,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -55,6 +56,11 @@ public class ForecastFragment extends Fragment {
         hourlyDataList = new ArrayList<>();
         dailyDataList = new ArrayList<>();
 
+        lat = getArguments().getDouble("lattitude");
+        lon = getArguments().getDouble("longitude");
+        Toast.makeText(getActivity(), ""+lat+"\n"+lon, Toast.LENGTH_SHORT).show();
+        lat = 22.5726;
+        lon = 88.3639;
         /*later work
         * Here collect lat and lon
         * then remove comment
@@ -68,6 +74,8 @@ public class ForecastFragment extends Fragment {
     }
 
     private void collectDailyWeather(double lat, double lon) {
+        /*https://api.weatherbit.io/v2.0/forecast/daily?key=21580262673342e28e1c87639965a4e8&lat=38.123&lon=-78.543*/
+        /*https://api.weatherbit.io/v2.0/forecast/daily?key=21580262673342e28e1c87639965a4e8&lat=22.5726&lon=88.3639*/
         String subUrl = "daily?key=21580262673342e28e1c87639965a4e8&lat="+lat+"&lon="+lon;
         DailyWeatherClient dailyWeatherClient = DailyWeatherClient.dailyRetrofitClient.create(DailyWeatherClient.class);
         Call<DailyWeather> dwCall = dailyWeatherClient.getDailyWeather(subUrl);
@@ -77,6 +85,10 @@ public class ForecastFragment extends Fragment {
                 if(response.code()==200){
                     Toast.makeText(getActivity(), "200 OK", Toast.LENGTH_SHORT).show();
                     dailyDataList =  response.body().getData();
+                    Toast.makeText(getActivity(), "Daily size: "+dailyDataList.size(), Toast.LENGTH_SHORT).show();
+                    DailyForecastAdapter dailyAdapter = new DailyForecastAdapter(getActivity(),dailyDataList);
+                    dailyLV.setAdapter(dailyAdapter);
+
 
                 }
                 else if(response.code()==304){
@@ -111,6 +123,8 @@ public class ForecastFragment extends Fragment {
             @Override
             public void onFailure(Call<DailyWeather> call, Throwable t) {
 
+                Log.d("forecast","DailyCallFailed");
+                Log.d("forecast D",""+t.getMessage());
             }
         });
     }
@@ -128,6 +142,11 @@ public class ForecastFragment extends Fragment {
                     Toast.makeText(getActivity(), "200 OK", Toast.LENGTH_SHORT).show();
                     hourlyDataList = response.body().getData();
 
+                    HourlyForecastAdapter hourlyForecastAdapter = new HourlyForecastAdapter(getActivity(),hourlyDataList);
+                    LinearLayoutManager llm = new LinearLayoutManager(getActivity());
+                    llm.setOrientation(LinearLayoutManager.HORIZONTAL);
+                    hourlyRV.setLayoutManager(llm);
+                    hourlyRV.setAdapter(hourlyForecastAdapter);
                 }
                 else if(response.code()==304){
                     Toast.makeText(getActivity(), "304 Not Modified", Toast.LENGTH_SHORT).show();
@@ -156,14 +175,13 @@ public class ForecastFragment extends Fragment {
                     Toast.makeText(getActivity(), "Something Wrong", Toast.LENGTH_SHORT).show();
                 }
 
-
-
-
             }
 
             @Override
             public void onFailure(Call<HourlyWeather> call, Throwable t) {
 
+                Log.d("forecast","HourlyCallFailed");
+                Log.d("forecast H",""+t.getMessage());
             }
         });
     }
@@ -174,16 +192,9 @@ public class ForecastFragment extends Fragment {
 
 
 
-        DailyForecastAdapter dailyAdapter = new DailyForecastAdapter(getActivity(),dailyDataList);
-        dailyLV.setAdapter(dailyAdapter);
-        HourlyForecastAdapter hourlyForecastAdapter = new HourlyForecastAdapter(getActivity(),hourlyDataList);
-        LinearLayoutManager llm = new LinearLayoutManager(getActivity());
-        llm.setOrientation(LinearLayoutManager.HORIZONTAL);
-        hourlyRV.setLayoutManager(llm);
-        hourlyRV.setAdapter(hourlyForecastAdapter);
 
-
-
+        Toast.makeText(getActivity(), "Adapter called", Toast.LENGTH_SHORT).show();
+        Log.d("forecast","Adapter called");
 
 
 

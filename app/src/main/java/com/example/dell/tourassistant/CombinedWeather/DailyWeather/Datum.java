@@ -14,7 +14,7 @@ public class Datum {
     private Integer rh;
     @SerializedName("wind_spd")
     @Expose
-    private Integer windSpd;
+    private double windSpd;
     @SerializedName("pop")
     @Expose
     private Integer pop;
@@ -59,7 +59,7 @@ public class Datum {
     private Integer snowDepth;
     @SerializedName("precip")
     @Expose
-    private Integer precip;
+    private double precip;
     @SerializedName("max_dhi")
     @Expose
     private Double maxDhi;
@@ -71,7 +71,7 @@ public class Datum {
     private Double temp;
     @SerializedName("min_temp")
     @Expose
-    private Integer minTemp;
+    private double minTemp;
     @SerializedName("clouds")
     @Expose
     private Integer clouds;
@@ -98,7 +98,7 @@ public class Datum {
         this.rh = rh;
     }
 
-    public Integer getWindSpd() {
+    public double getWindSpd() {
         return windSpd;
     }
 
@@ -218,7 +218,7 @@ public class Datum {
         this.snowDepth = snowDepth;
     }
 
-    public Integer getPrecip() {
+    public double getPrecip() {
         return precip;
     }
 
@@ -250,7 +250,7 @@ public class Datum {
         this.temp = temp;
     }
 
-    public Integer getMinTemp() {
+    public double getMinTemp() {
         return minTemp;
     }
 

@@ -18,7 +18,7 @@ public interface HourlyWeatherClient {
             @Url String url
     );
 
-    public static Retrofit hourlyRetrofitClient = new Retrofit.Builder()
+    public static final Retrofit hourlyRetrofitClient = new Retrofit.Builder()
             .baseUrl("https://api.weatherbit.io/v2.0/forecast/")
             .addConverterFactory(GsonConverterFactory.create())
             .build();
