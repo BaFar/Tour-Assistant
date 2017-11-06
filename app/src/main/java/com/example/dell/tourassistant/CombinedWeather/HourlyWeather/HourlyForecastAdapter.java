@@ -4,6 +4,7 @@ import android.content.Context;
 import android.support.annotation.LayoutRes;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -42,6 +43,7 @@ public class HourlyForecastAdapter extends RecyclerView.Adapter<HourlyForecastAd
        holder.tempTV.setText(String.valueOf(hourlyDataList.get(position).getTemp())+(char)0x00B0+"C");
         holder.timeTV.setText(hourlyDataList.get(position).getDatetime());
         holder.iconIV.setImageResource(ExtraHelper.getIconId(hourlyDataList.get(position).getWeather().getIcon()));
+        Log.d("Icon",hourlyDataList.get(position).getWeather().getIcon());
     }
 
 

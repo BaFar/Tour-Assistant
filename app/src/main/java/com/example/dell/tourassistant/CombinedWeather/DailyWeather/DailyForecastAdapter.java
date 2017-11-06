@@ -65,7 +65,7 @@ public class DailyForecastAdapter extends ArrayAdapter<Datum>{
         dayTV.setText(goal+"\n"+dailyDataList.get(position).getDatetime());
         highTempTV.setText(maxtemp+(char)0x00B0);
         lowTempTV.setText(mintemp+(char)0x00B0);
-        int iconCode = ExtraHelper.getIconId(dailyDataList.get(position).getWeather().getCode());
+        int iconCode = ExtraHelper.getIconId(dailyDataList.get(position).getWeather().getIcon());
         weatherIconIV.setImageResource(iconCode);
         return convertView;
 

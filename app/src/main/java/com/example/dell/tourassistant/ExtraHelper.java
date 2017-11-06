@@ -20,8 +20,8 @@ public class ExtraHelper {
         return currentTime;
     }
     public static int getIconId(String code){
-        switch (code) {
 
+        switch (code) {
             case "t01d": return R.drawable.t01d;
             case "t01n": return R.drawable.t01n;
             case "t02d": return R.drawable.t02d;
@@ -54,11 +54,100 @@ public class ExtraHelper {
             case "r06n": return R.drawable.r06n;
             case "s01d": return R.drawable.s01d;
             case "s01n": return R.drawable.s01n;
+            case "s02d": return R.drawable.s02d;
+            case "s02n": return R.drawable.s02n;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            case "s03d": return R.drawable.s03d;
+            case "s03n": return R.drawable.s03n;
+            case "s04d": return R.drawable.s04d;
+            case "s04n": return R.drawable.s04n;
+            case "s05d": return R.drawable.s05d;
+            case "s05n": return R.drawable.s05n;
+            case "s06d": return R.drawable.s06d;
+            case "s06n": return R.drawable.s06n;
+            case "a01d": return R.drawable.a01d;
+            case "a01n": return R.drawable.a01n;
+            case "a02d": return R.drawable.a02d;
+            case "a02n": return R.drawable.a02n;
+            case "a03d": return R.drawable.a03d;
+            case "a03n": return R.drawable.a03n;
+            case "a04d": return R.drawable.a04d;
+            case "a04n": return R.drawable.a04n;
+            case "a05d": return R.drawable.a05d;
+            case "a05n": return R.drawable.a05n;
+            case "a06d": return R.drawable.a06d;
+            case "a06n": return R.drawable.a06n;
+            case "c01d": return R.drawable.c01d;
+            case "c01n": return R.drawable.c01n;
             case "c02d": return R.drawable.c02d;
             case "c02n": return R.drawable.c02n;
-        default:
-            return R.drawable.wind_icon;
-
+            case "c03d": return R.drawable.c03d;
+            case "c03n": return R.drawable.c03n;
+            case "c04d": return R.drawable.c04d;
+            case "c04n": return R.drawable.c04n;
+            case "u00d": return R.drawable.u00d;
+            case "u00n": return R.drawable.u00n;
     }
+    return  R.mipmap.ic_launcher_round;
     }
 }
