@@ -56,67 +56,6 @@ public class ExtraHelper {
             case "s01n": return R.drawable.s01n;
             case "s02d": return R.drawable.s02d;
             case "s02n": return R.drawable.s02n;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
             case "s03d": return R.drawable.s03d;
             case "s03n": return R.drawable.s03n;
             case "s04d": return R.drawable.s04d;

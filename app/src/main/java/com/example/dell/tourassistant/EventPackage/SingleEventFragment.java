@@ -381,7 +381,10 @@ public class SingleEventFragment extends Fragment implements View.OnClickListene
                 startActivity(nearIntent);
                 break;
             case R.id.weather_place_Btn:
-                startActivity(new Intent(getActivity(), WeatherActivity.class).putExtra("event_lattitude",24.555).putExtra("event_longitude",94.7093));
+                Intent wintent = new Intent(getActivity(),WeatherActivity.class);
+                wintent.putExtra("event_lattitude",event.getLattitude());
+                wintent.putExtra("event_longitude",event.getLongitude());
+                startActivity(wintent);
                 break;
             default:
                 Toast.makeText(getActivity(), "Other place Clicked", Toast.LENGTH_SHORT).show();

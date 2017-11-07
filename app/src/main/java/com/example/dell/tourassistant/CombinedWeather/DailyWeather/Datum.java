@@ -77,7 +77,7 @@ public class Datum {
     private Integer clouds;
     @SerializedName("vis")
     @Expose
-    private Integer vis;
+    private double vis;
     @SerializedName("dhi")
     @Expose
     private Double dhi;
@@ -266,7 +266,7 @@ public class Datum {
         this.clouds = clouds;
     }
 
-    public Integer getVis() {
+    public double getVis() {
         return vis;
     }
 

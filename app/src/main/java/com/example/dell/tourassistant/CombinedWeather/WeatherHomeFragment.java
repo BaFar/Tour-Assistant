@@ -1,5 +1,8 @@
 package com.example.dell.tourassistant.CombinedWeather;
 
+import android.app.Activity;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -7,6 +10,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -16,10 +20,18 @@ import com.example.dell.tourassistant.CombinedWeather.CurrentWeatherPackage.Curr
 import com.example.dell.tourassistant.CombinedWeather.CurrentWeatherPackage.Datum;
 import com.example.dell.tourassistant.ExtraHelper;
 import com.example.dell.tourassistant.R;
+import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
+import com.google.android.gms.common.GooglePlayServicesRepairableException;
+import com.google.android.gms.common.api.Status;
+import com.google.android.gms.location.places.Place;
+import com.google.android.gms.location.places.ui.PlacePicker;
+import com.google.android.gms.maps.model.LatLng;
 
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+
+import static android.content.Context.MODE_PRIVATE;
 
 
 public class WeatherHomeFragment extends Fragment {
@@ -29,36 +41,25 @@ public class WeatherHomeFragment extends Fragment {
         // Required empty public constructor
     }
     private TextView currentTempTV,weatherTypeTV,sunsetTV,sunriseTV,cityNameTV,dateTimeTV;
+    private EditText placeSelectorET;
     private ImageView minTempIV,maxTempIV,weatherTypeIV;
 
-    String lowTemp;
-    String highTemp;
-    String weatherCode;
-    String cityName;
-    String chill;
-    String speed;
-    String humidity;
-    String rising;
-    String pressure;
-
-    String sunrise;
-    String sunset;
-    String weatherText;
-    String pubdate;
-    String weatherType;
-    String iconeCode;
-    String dateTime;
+    String lowTemp,highTemp,weatherCode,cityName,chill,speed,humidity,rising,pressure,sunrise,sunset,
+            weatherText,pubdate,weatherType,iconeCode,dateTime,placeName;
     private CurrentWeather weather;
     private Double windspeed,visibility,temp,lat,lon;
     private DetailsInterface dInterface;
+    final int PLACE_PICKER_REQUEST_CODE= 1;
+    private SharedPreferences preferences;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view =  inflater.inflate(R.layout.fragment_weather_home, container, false);
+        placeSelectorET = (EditText) view.findViewById(R.id.place_selector);
 
-         dInterface = (DetailsInterface) getActivity();
+        dInterface = (DetailsInterface) getActivity();
         lat = 90.4786;
         lon = 23.81435;
         try{
@@ -69,6 +70,8 @@ public class WeatherHomeFragment extends Fragment {
         catch (Exception e){
             Log.e("whf","no values");
         }
+        preferences = getActivity().getSharedPreferences("latlonSP",MODE_PRIVATE);
+
 
 
         currentTempTV = (TextView)view.findViewById(R.id.show_current_temp);
@@ -81,6 +84,14 @@ public class WeatherHomeFragment extends Fragment {
 
 
         weather = new CurrentWeather();
+        placeSelectorET.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                selectPlace();
+
+            }
+        });
 
         return view;
 
@@ -171,6 +182,53 @@ public class WeatherHomeFragment extends Fragment {
 
         dInterface.detailsContainer(cityName,temp,dateTime);
 
+    }
+    public void selectPlace() {
+
+
+        try {
+            new PlacePicker.IntentBuilder().build(getActivity());
+
+            PlacePicker.IntentBuilder builder = new PlacePicker.IntentBuilder();
+
+            startActivityForResult(builder.build(getActivity()), PLACE_PICKER_REQUEST_CODE);
+        } catch (GooglePlayServicesRepairableException e) {
+            // TODO: Handle the error.
+            Log.d("exception","repairable");
+        } catch (GooglePlayServicesNotAvailableException e) {
+            // TODO: Handle the error.
+            Log.d("exception","repairable");
+        }
+
+    }
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+
+        String TAG ="on result back";
+        if (requestCode == PLACE_PICKER_REQUEST_CODE) {
+            if (resultCode == Activity.RESULT_OK) {
+                Place place = PlacePicker.getPlace(getActivity(), data);
+                placeName = String.valueOf(place.getName());
+                placeSelectorET.setText(placeName);
+                LatLng loc= place.getLatLng();
+                lat = loc.latitude;
+                lon = loc.longitude;
+                SharedPreferences.Editor editor = preferences.edit();
+                editor.putFloat("req_lat", (float) loc.latitude);
+                editor.putFloat("req_lon", (float) loc.longitude);
+                editor.apply();
+                editor.commit();
+                collectCurrentWeather(lat,lon);
+
+
+            } else if (resultCode == PlacePicker.RESULT_ERROR) {
+                Status status = PlacePicker.getStatus(getActivity(), data);
+                // TODO: Handle the error.
+                Log.i(TAG, status.getStatusMessage());
+
+            } else if (resultCode == Activity.RESULT_CANCELED) {
+                // The user canceled the operation.
+            }
+        }
     }
 
 

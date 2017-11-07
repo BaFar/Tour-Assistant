@@ -1,5 +1,7 @@
 package com.example.dell.tourassistant.CombinedWeather;
 
+import android.content.SharedPreferences;
+import android.preference.Preference;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
@@ -20,6 +22,7 @@ public class WeatherActivity extends AppCompatActivity implements WeatherHomeFra
     private BottomNavigationView navigationView;
     private String cityName,dateTime;
     private double temp;
+    private SharedPreferences preferences;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -35,7 +38,15 @@ public class WeatherActivity extends AppCompatActivity implements WeatherHomeFra
             lon = getIntent().getDoubleExtra("event_longitude",0.0);
         }catch (Exception e){
             Log.e("weatherActivity","No intent data found");
+            Log.d("weatherActivity","not lat lon recveived");
         }
+
+        preferences = getSharedPreferences("latlonSP",MODE_PRIVATE);
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.putFloat("req_lat",(float) lat);
+        editor.putFloat("req_lon",(float) lon);
+        editor.apply();
+        editor.commit();
 
 
         final Bundle bundle= new Bundle();
@@ -60,8 +71,9 @@ public class WeatherActivity extends AppCompatActivity implements WeatherHomeFra
                 Bundle innerBundle = new Bundle();
                 switch (item.getItemId()){
                     case R.id.nav_current:
-                        innerBundle.putDouble("lattitude",iLat);
-                        innerBundle.putDouble("longitude",iLon);
+
+                        innerBundle.putDouble("lattitude",preferences.getFloat("req_lat",0));
+                        innerBundle.putDouble("longitude",preferences.getFloat("req_lon",0));
                         fragment = new WeatherHomeFragment();
                         fragment.setArguments(innerBundle);
                         break;
@@ -73,8 +85,8 @@ public class WeatherActivity extends AppCompatActivity implements WeatherHomeFra
                         fragment.setArguments(innerBundle);
                         break;
                     case R.id.nav_forecast:
-                        innerBundle.putDouble("lattitude",iLat);
-                        innerBundle.putDouble("longitude",iLon);
+                        innerBundle.putDouble("lattitude",preferences.getFloat("req_lat",0));
+                        innerBundle.putDouble("longitude",preferences.getFloat("req_lon",0));
                         fragment = new ForecastFragment();
                         fragment.setArguments(innerBundle);
                         break;

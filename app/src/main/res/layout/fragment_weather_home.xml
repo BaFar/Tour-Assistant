@@ -67,6 +67,16 @@
                 android:text="29/10/17: 10:30PM" />
         </LinearLayout>
 
+        <EditText
+            android:id="@+id/place_selector"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="select Place"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentTop="true"
+            />
+
+
 
 
 
