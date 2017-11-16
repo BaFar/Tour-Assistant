@@ -74,14 +74,7 @@ public class EventActivity extends AppCompatActivity implements AddEventFragment
 
                 }
 
-                try{
-                    for(Event event: cEventList){
-                        Toast.makeText(EventActivity.this, ""+event.getDestination(), Toast.LENGTH_SHORT).show();
-                    }
-                    Toast.makeText(EventActivity.this, "Size : "+cEventList.size(), Toast.LENGTH_SHORT).show();
-                }catch (Exception e){
-                    Log.d("data","array size 0");
-                }
+               Log.d("commingEvents:",""+cEventList.size());
 
             }
 
@@ -167,8 +160,8 @@ public class EventActivity extends AppCompatActivity implements AddEventFragment
     @Override
     public void createEventClicked(String destination, int budget, String fromDate, String toDate, double lattitude, double longitude) {
 
-        Toast.makeText(this, ""+destination, Toast.LENGTH_SHORT).show();
-        Toast.makeText(this, ""+fromDate, Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, "Created: "+destination, Toast.LENGTH_SHORT).show();
+        //Toast.makeText(this, ""+fromDate, Toast.LENGTH_SHORT).show();
 
         databaseReference= FirebaseDatabase.getInstance().getReference().child("users").child(userId).child("EventList");
         String keyValue=databaseReference.push().getKey();

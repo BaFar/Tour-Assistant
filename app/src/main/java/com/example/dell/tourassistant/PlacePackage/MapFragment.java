@@ -3,9 +3,12 @@ package com.example.dell.tourassistant.PlacePackage;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.Toast;
 
 import com.example.dell.tourassistant.R;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -21,12 +24,14 @@ import java.util.ArrayList;
 /**
  * A simple {@link Fragment} subclass.
  */
+
 public class MapFragment extends Fragment implements OnMapReadyCallback,View.OnClickListener {
 
     private MapView mapView;
+    private Button gotoListBtn;
 
     private GoogleMap mGoogleMap;
-    private ArrayList<SinglePlace> placelist;
+    private ArrayList<SinglePlace>placelist;
     public MapFragment() {
         // Required empty public constructor
     }
@@ -37,6 +42,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,View.OnC
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_map, container, false);
+        gotoListBtn = (Button) view.findViewById(R.id.listBtn);
+        gotoListBtn.setOnClickListener(this);
 
         return view;
     }
@@ -46,6 +53,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,View.OnC
         super.onViewCreated(view, savedInstanceState);
 
         placelist=getArguments().getParcelableArrayList("placeListToMap");
+        Toast.makeText(getActivity(), "received place list size "+placelist.size(), Toast.LENGTH_SHORT).show();
         mapView= (MapView) getActivity().findViewById(R.id.placeMap);
 
         if (mapView!=null){
@@ -72,8 +80,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,View.OnC
         LatLng latLng=new LatLng(placelist.get(0).getLat(),placelist.get(0).getLon());
         mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15));
         mGoogleMap.getUiSettings().setZoomControlsEnabled(true);
-
-
 
 
     }

@@ -89,4 +89,29 @@ public class ExtraHelper {
     }
     return  R.mipmap.ic_launcher_round;
     }
+    public static String getHour(String time){
+        time =""+time.charAt(11)+time.charAt(12);
+        int i = Integer.parseInt(time);
+        i++;
+        String timeSuf ="";
+        if (i<12 ){
+            timeSuf="AM";
+        }
+        else if (i == 24)
+        {
+            timeSuf="AM";
+            i = 12;
+        }
+        else  if (i==12){
+            timeSuf="PM";
+        }
+        else {
+            timeSuf= "PM";
+            i= i%12;
+        }
+
+
+        time = String.valueOf(i)+timeSuf;
+        return  time;
+    }
 }

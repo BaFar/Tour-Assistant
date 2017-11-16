@@ -35,7 +35,7 @@ public class Datum {
     private Double dewpt;
     @SerializedName("snow")
     @Expose
-    private Integer snow;
+    private double snow;
     @SerializedName("uv")
     @Expose
     private Integer uv;
@@ -154,7 +154,7 @@ public class Datum {
         this.dewpt = dewpt;
     }
 
-    public Integer getSnow() {
+    public double getSnow() {
         return snow;
     }
 

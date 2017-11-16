@@ -44,7 +44,7 @@ public class Datum {
     private String windCdirFull;
     @SerializedName("slp")
     @Expose
-    private Integer slp;
+    private double slp;
     @SerializedName("state_code")
     @Expose
     private String stateCode;
@@ -196,7 +196,7 @@ public class Datum {
         this.windCdirFull = windCdirFull;
     }
 
-    public Integer getSlp() {
+    public double getSlp() {
         return slp;
     }
 

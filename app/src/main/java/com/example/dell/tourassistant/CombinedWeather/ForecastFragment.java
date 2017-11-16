@@ -77,8 +77,8 @@ public class ForecastFragment extends Fragment {
                 if(response.code()==200){
                     Toast.makeText(getActivity(), "200 OK", Toast.LENGTH_SHORT).show();
                     dailyDataList =  response.body().getData();
-                    Toast.makeText(getActivity(), "Daily size: "+dailyDataList.size(), Toast.LENGTH_SHORT).show();
-                    Toast.makeText(getActivity(), ""+response.body().getCityName(), Toast.LENGTH_SHORT).show();
+                  //  Toast.makeText(getActivity(), "Daily size: "+dailyDataList.size(), Toast.LENGTH_SHORT).show();
+                   // Toast.makeText(getActivity(), ""+response.body().getCityName(), Toast.LENGTH_SHORT).show();
                     DailyForecastAdapter dailyAdapter = new DailyForecastAdapter(getActivity(),dailyDataList);
                     dailyLV.setAdapter(dailyAdapter);
 
@@ -135,7 +135,7 @@ public class ForecastFragment extends Fragment {
                     Toast.makeText(getActivity(), "200 OK", Toast.LENGTH_SHORT).show();
                     hourlyDataList = response.body().getData();
 
-                    Toast.makeText(getActivity(), ""+response.body().getCityName(), Toast.LENGTH_SHORT).show();
+                  //  Toast.makeText(getActivity(), ""+response.body().getCityName(), Toast.LENGTH_SHORT).show();
 
                     HourlyForecastAdapter hourlyForecastAdapter = new HourlyForecastAdapter(getActivity(),hourlyDataList);
 

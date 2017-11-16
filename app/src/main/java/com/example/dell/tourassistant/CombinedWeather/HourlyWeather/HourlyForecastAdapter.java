@@ -40,12 +40,13 @@ public class HourlyForecastAdapter extends RecyclerView.Adapter<HourlyForecastAd
 
     @Override
     public void onBindViewHolder(HourlyDataViewHolder holder, int position) {
-       holder.tempTV.setText(String.valueOf(hourlyDataList.get(position).getTemp())+(char)0x00B0+"C");
-        holder.timeTV.setText(hourlyDataList.get(position).getDatetime());
+        String time = hourlyDataList.get(position).getDatetime();
+        holder.tempTV.setText(String.valueOf(hourlyDataList.get(position).getTemp())+(char)0x00B0+"C");
+        holder.timeTV.setText(ExtraHelper.getHour(time));
         holder.iconIV.setImageResource(ExtraHelper.getIconId(hourlyDataList.get(position).getWeather().getIcon()));
-        Log.d("Icon",hourlyDataList.get(position).getWeather().getIcon());
-    }
 
+
+    }
 
     @Override
     public int getItemCount() {

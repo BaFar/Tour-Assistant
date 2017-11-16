@@ -17,6 +17,7 @@ import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.dell.tourassistant.R;
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
@@ -28,6 +29,7 @@ import com.google.android.gms.maps.model.LatLng;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -48,7 +50,7 @@ public class AddEventFragment extends Fragment implements View.OnClickListener{
     private Calendar calendar;
     private int year,month,day;
     final int PLACE_PICKER_REQUEST_CODE= 1;
-
+    long millis;
 
 
     public AddEventFragment() {
@@ -86,7 +88,8 @@ public class AddEventFragment extends Fragment implements View.OnClickListener{
                // destinationET.setText(placeName);
             }
         });
-        destinationET.setText(placeName);
+        destinationET.setText("Click Here");
+        toDateBtn.setEnabled(false);
 
         return view;
 
@@ -144,20 +147,48 @@ public class AddEventFragment extends Fragment implements View.OnClickListener{
             case R.id.fromDateValue:
                 pickerDialog = new DatePickerDialog(getActivity(),onFormDateSelectedListener,year,month,day);
                 pickerDialog.getDatePicker().setMinDate(System.currentTimeMillis()-1000);
+
                 pickerDialog.show();
 
                 break;
             case R.id.toDateValue:
                 pickerDialog = new DatePickerDialog(getActivity(),onToDateSelectedListener,year,month,day);
-                pickerDialog.getDatePicker().setMinDate(System.currentTimeMillis()-1000);
+              //  pickerDialog.getDatePicker().setMinDate(System.currentTimeMillis()-1000);
+                pickerDialog.getDatePicker().setMinDate(millis);
                 pickerDialog.show();
                 break;
             case R.id.eventCreateBtn:
 
+
                 destination = destinationET.getText().toString();
-                destination = placeName;
-                budget = Integer.parseInt(budgetET.getText().toString()); /*imply condition*/
-                createEvent.createEventClicked(destination,budget,fdate,tdate,lat,lon);
+                //destination = placeName;
+               //budget = Integer.parseInt(budgetET.getText().toString()); /*imply condition*/
+                String budgetStr = budgetET.getText().toString();
+                boolean isOK=true;
+                budget = -5;
+                try{
+                budget = Integer.parseInt(budgetStr);
+            }
+                catch (Exception e){
+                    isOK = false;
+                }
+                Toast.makeText(getActivity(), "D: "+destination+"\nB:"+budgetStr+"\nf:"+fdate+"\nt:"+tdate, Toast.LENGTH_SHORT).show();
+                if (destination==null || destination=="Click Here" || fdate ==null || tdate == null){
+
+                    Toast.makeText(getActivity(), "Fill All field with valid information", Toast.LENGTH_LONG).show();
+                }
+                else if(!isOK || budget <= 0){
+                    Toast.makeText(getActivity(), "Set valid Budget", Toast.LENGTH_LONG).show();
+                }
+                else {
+
+                    createEvent.createEventClicked(destination,budget,fdate,tdate,lat,lon);
+                    toDateBtn.setEnabled(false);
+                    destinationET.setText("Click Here");
+                    fromDateBtn.setText("");
+                    toDateBtn.setText("");
+                }
+
 
                 break;
 
@@ -170,8 +201,11 @@ public class AddEventFragment extends Fragment implements View.OnClickListener{
 
             calendar.set(year,month,dayOfMonth);
             SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+             Date dt = calendar.getTime();
             fdate = dateFormat.format(calendar.getTime());
+             millis = dt.getTime();
             fromDateBtn.setText(fdate);
+            toDateBtn.setEnabled(true);
 
         }
     };
@@ -179,7 +213,6 @@ public class AddEventFragment extends Fragment implements View.OnClickListener{
         @Override
         public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
             calendar.set(year,month,dayOfMonth);
-
             SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
             tdate = dateFormat.format(calendar.getTime());
             toDateBtn.setText(tdate);

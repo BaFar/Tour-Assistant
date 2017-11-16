@@ -69,8 +69,13 @@ public class PlaceActivity extends AppCompatActivity implements GoogleApiClient.
 
 
         preferences = getSharedPreferences("coordinate",MODE_PRIVATE);
-        preferences.edit().putString("currentLat",String.valueOf(currentLat)).apply();
-        preferences.edit().putString("currentLat",String.valueOf(currentLat)).apply();
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.putFloat("desLat", (float) deslat);
+        editor.putFloat("desLon", (float) deslon);
+        editor.apply();
+        editor.commit();
+        //editor.putString("currentLat",String.valueOf(currentLat)).apply();
+        //preferences.edit().putString("currentLat",String.valueOf(currentLat)).apply();
 
         HomeFragment fragment = new HomeFragment();
         Bundle bundle= new Bundle();
@@ -89,13 +94,14 @@ public class PlaceActivity extends AppCompatActivity implements GoogleApiClient.
     }
     public void collectPlaceInfo(final String searchCatagory){
 
-        String lat="23.4854";
-        String lon = "90.34567";
+        String lat= String.valueOf(preferences.getFloat("desLat",0));
+        String lon = String.valueOf(preferences.getFloat("desLon",0));;
+        Log.d("placeCallLatLon",""+lat+"\n" +lon);
         String radius="2000";
-        if (currentLat!=0 && currentLon!=0){
+       /*if (currentLat!=0 && currentLon!=0){
             lat=String.valueOf(currentLat);
             lon=String.valueOf(currentLon);
-        }
+        }*/
 
         String subUrl="json?location="+lat+","+lon+"&radius="+radius+"&type="+searchCatagory+"&key=AIzaSyAdt3XwQPIy5mKg3FrqyLaabVNd0gehToQ";
         // String subUrl = "json?location=-33.8670522,151.1957362&radius=500&type=food&key=AIzaSyAdt3XwQPIy5mKg3FrqyLaabVNd0gehToQ";
@@ -156,6 +162,8 @@ public class PlaceActivity extends AppCompatActivity implements GoogleApiClient.
                 else {
                     Toast.makeText(PlaceActivity.this, "Bad result", Toast.LENGTH_SHORT).show();
                     Log.d("response","bad response");
+
+
                 }
             }
 
@@ -163,6 +171,7 @@ public class PlaceActivity extends AppCompatActivity implements GoogleApiClient.
             public void onFailure(Call<Places> call, Throwable t) {
 
                 Log.e("response","call failed");
+                Log.d("response",""+t.getMessage());
             }
         });
 

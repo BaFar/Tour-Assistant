@@ -41,14 +41,24 @@ public class HomeFragment extends Fragment implements View.OnClickListener{
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-
-
+        // Inflate the layout for this fragment
+        View view= inflater.inflate(R.layout.fragment_home, container, false);
         String value= getArguments().getString("msg",null);
         Toast.makeText(getActivity(), ""+value, Toast.LENGTH_SHORT).show();
 
+        foodBtn = (Button) view.findViewById(R.id.catagoryFood);
+        resturantBtn = (Button) view.findViewById(R.id.catagoryResturant);
+        hotelBtn = (Button) view.findViewById(R.id.catagoryHotel);
+        hospitalBtn = (Button) view.findViewById(R.id.catagoryHospital);
+        atmBtn = (Button) view.findViewById(R.id.catagoryATM);
+        policeBtn = (Button) view.findViewById(R.id.catagoryPolice);
 
-        // Inflate the layout for this fragment
-        View view= inflater.inflate(R.layout.fragment_home, container, false);
+        foodBtn.setOnClickListener(this);
+        resturantBtn.setOnClickListener(this);
+        hotelBtn.setOnClickListener(this);
+        hospitalBtn.setOnClickListener(this);
+        atmBtn.setOnClickListener(this);
+        policeBtn.setOnClickListener(this);
 
         return view;
     }
@@ -58,25 +68,9 @@ public class HomeFragment extends Fragment implements View.OnClickListener{
     public void onResume() {
         super.onResume();
 
-        SharedPreferences preferences = getActivity().getSharedPreferences("coordinate",Context.MODE_PRIVATE);
+        /*SharedPreferences preferences = getActivity().getSharedPreferences("coordinate",Context.MODE_PRIVATE);
         currentLat= preferences.getString("currentLat",null);
-        currentLon = preferences.getString("currentLon",null);
-
-
-
-        foodBtn = (Button) getActivity().findViewById(R.id.catagoryFood);
-        resturantBtn = (Button) getActivity().findViewById(R.id.catagoryResturant);
-        hotelBtn = (Button) getActivity().findViewById(R.id.catagoryHotel);
-        hospitalBtn = (Button) getActivity().findViewById(R.id.catagoryHospital);
-        atmBtn = (Button) getActivity().findViewById(R.id.catagoryATM);
-        policeBtn = (Button) getActivity().findViewById(R.id.catagoryPolice);
-
-        foodBtn.setOnClickListener(this);
-        resturantBtn.setOnClickListener(this);
-        hotelBtn.setOnClickListener(this);
-        hospitalBtn.setOnClickListener(this);
-        atmBtn.setOnClickListener(this);
-        policeBtn.setOnClickListener(this);
+        currentLon = preferences.getString("currentLon",null);*/
 
 
     }
@@ -142,7 +136,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener{
     }
 
 
-    public int getIcon(String iconCode) {
+    /*public int getIcon(String iconCode) {
         int code = 0;
         switch (iconCode) {
             case "200":
@@ -190,6 +184,6 @@ public class HomeFragment extends Fragment implements View.OnClickListener{
 
         return code;
 
-    }
+    }*/
 }
 
