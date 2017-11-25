@@ -10,6 +10,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.example.dell.tourassistant.CombinedWeather.HourlyWeather.CustomHourlyWeather;
 import com.example.dell.tourassistant.ExtraHelper;
 import com.example.dell.tourassistant.R;
 
@@ -22,12 +23,12 @@ import java.util.List;
  * Created by DELL on 11/1/2017.
  */
 
-public class DailyForecastAdapter extends ArrayAdapter<Datum>{
+public class DailyForecastAdapter extends ArrayAdapter<CustomDailyWeather>{
     private Context context;
-    private List<Datum> dailyDataList;
+    private List<CustomDailyWeather> dailyDataList;
 
 
-    public DailyForecastAdapter(@NonNull Context context, List<Datum> dailyDataList) {
+    public DailyForecastAdapter(@NonNull Context context, List<CustomDailyWeather> dailyDataList) {
         super(context, R.layout.single_day_update, dailyDataList);
 
         this.context = context;
@@ -48,7 +49,7 @@ public class DailyForecastAdapter extends ArrayAdapter<Datum>{
          lowTempTV = (TextView) convertView.findViewById(R.id.show_low_temp);
         weatherIconIV = (ImageView) convertView.findViewById(R.id.show_weather_icon);
 
-        String input = dailyDataList.get(position).getDatetime();
+        String input = dailyDataList.get(position).getDate();
         SimpleDateFormat inFormat = new SimpleDateFormat("yyyy-MM-dd");//dd-MM-yyyy
         Date date = null;
         try {
@@ -56,16 +57,20 @@ public class DailyForecastAdapter extends ArrayAdapter<Datum>{
         } catch (ParseException e) {
             e.printStackTrace();
         }
+
+        //CustomDailyWeather dweather = new CustomDailyWeather();
+
+
         SimpleDateFormat outFormat = new SimpleDateFormat("EEEE");
         String goal = outFormat.format(date);
 
         maxtemp = String.valueOf(dailyDataList.get(position).getMaxTemp());
         mintemp = String.valueOf(dailyDataList.get(position).getMinTemp());
 
-        dayTV.setText(goal+"\n"+dailyDataList.get(position).getDatetime());
-        highTempTV.setText(maxtemp+(char)0x00B0);
+        dayTV.setText(goal+"\n"+dailyDataList.get(position).getDate());
+        highTempTV.setText(maxtemp+(char)0x00B0);               /*add unit later*/
         lowTempTV.setText(mintemp+(char)0x00B0);
-        int iconCode = ExtraHelper.getIconId(dailyDataList.get(position).getWeather().getIcon());
+        int iconCode = ExtraHelper.getIconId(dailyDataList.get(position).getIconCode());
         weatherIconIV.setImageResource(iconCode);
         return convertView;
 

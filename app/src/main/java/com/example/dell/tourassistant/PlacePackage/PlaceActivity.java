@@ -98,10 +98,6 @@ public class PlaceActivity extends AppCompatActivity implements GoogleApiClient.
         String lon = String.valueOf(preferences.getFloat("desLon",0));;
         Log.d("placeCallLatLon",""+lat+"\n" +lon);
         String radius="2000";
-       /*if (currentLat!=0 && currentLon!=0){
-            lat=String.valueOf(currentLat);
-            lon=String.valueOf(currentLon);
-        }*/
 
         String subUrl="json?location="+lat+","+lon+"&radius="+radius+"&type="+searchCatagory+"&key=AIzaSyAdt3XwQPIy5mKg3FrqyLaabVNd0gehToQ";
         // String subUrl = "json?location=-33.8670522,151.1957362&radius=500&type=food&key=AIzaSyAdt3XwQPIy5mKg3FrqyLaabVNd0gehToQ";
@@ -260,6 +256,16 @@ public class PlaceActivity extends AppCompatActivity implements GoogleApiClient.
         ft.commit();
 
 
+    }
+
+    @Override
+    public void onBackPressed(){
+        if (getSupportFragmentManager().getBackStackEntryCount() == 1){
+            finish();
+        }
+        else {
+            super.onBackPressed();
+        }
     }
 
 

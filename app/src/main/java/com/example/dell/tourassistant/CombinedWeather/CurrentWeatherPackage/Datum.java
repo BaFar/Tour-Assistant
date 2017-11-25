@@ -11,7 +11,7 @@ public class Datum {
     private String windCdir;
     @SerializedName("rh")
     @Expose
-    private Integer rh;
+    private double rh;
     @SerializedName("pod")
     @Expose
     private String pod;
@@ -56,7 +56,7 @@ public class Datum {
     private Double vis;
     @SerializedName("h_angle")
     @Expose
-    private Integer hAngle;
+    private double hAngle;
     @SerializedName("dewpt")
     @Expose
     private Double dewpt;
@@ -108,7 +108,7 @@ public class Datum {
         this.windCdir = windCdir;
     }
 
-    public Integer getRh() {
+    public double getRh() {
         return rh;
     }
 
@@ -228,7 +228,7 @@ public class Datum {
         this.vis = vis;
     }
 
-    public Integer getHAngle() {
+    public double getHAngle() {
         return hAngle;
     }
 

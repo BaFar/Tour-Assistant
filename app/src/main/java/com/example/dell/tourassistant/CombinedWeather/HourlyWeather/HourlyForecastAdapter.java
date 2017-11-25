@@ -23,8 +23,8 @@ import java.util.List;
 
 public class HourlyForecastAdapter extends RecyclerView.Adapter<HourlyForecastAdapter.HourlyDataViewHolder> {
     private Context context;
-    private List<Datum> hourlyDataList;
-    public HourlyForecastAdapter(@NonNull Context context,List<Datum> hourlyDataList) {
+    private List<CustomHourlyWeather> hourlyDataList;
+    public HourlyForecastAdapter(@NonNull Context context,List<CustomHourlyWeather> hourlyDataList) {
        this.context = context;
         this.hourlyDataList = hourlyDataList;
     }
@@ -40,10 +40,10 @@ public class HourlyForecastAdapter extends RecyclerView.Adapter<HourlyForecastAd
 
     @Override
     public void onBindViewHolder(HourlyDataViewHolder holder, int position) {
-        String time = hourlyDataList.get(position).getDatetime();
+        String time = hourlyDataList.get(position).getTime();
         holder.tempTV.setText(String.valueOf(hourlyDataList.get(position).getTemp())+(char)0x00B0+"C");
         holder.timeTV.setText(ExtraHelper.getHour(time));
-        holder.iconIV.setImageResource(ExtraHelper.getIconId(hourlyDataList.get(position).getWeather().getIcon()));
+        holder.iconIV.setImageResource(ExtraHelper.getIconId(hourlyDataList.get(position).getIconCode()));
 
 
     }

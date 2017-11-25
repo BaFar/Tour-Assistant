@@ -26,7 +26,7 @@ public class Datum {
     private Double appTemp;
     @SerializedName("snow6h")
     @Expose
-    private Integer snow6h;
+    private double snow6h;
     @SerializedName("pod")
     @Expose
     private String pod;
@@ -35,7 +35,7 @@ public class Datum {
     private Double dewpt;
     @SerializedName("snow")
     @Expose
-    private Integer snow;
+    private double snow;
     @SerializedName("uv")
     @Expose
     private Integer uv;
@@ -50,7 +50,7 @@ public class Datum {
     private Weather weather;
     @SerializedName("snow_depth")
     @Expose
-    private Integer snowDepth;
+    private double snowDepth;
     @SerializedName("dhi")
     @Expose
     private Double dhi;
@@ -127,7 +127,7 @@ public class Datum {
         this.appTemp = appTemp;
     }
 
-    public Integer getSnow6h() {
+    public double getSnow6h() {
         return snow6h;
     }
 
@@ -151,7 +151,7 @@ public class Datum {
         this.dewpt = dewpt;
     }
 
-    public Integer getSnow() {
+    public double getSnow() {
         return snow;
     }
 
@@ -191,7 +191,7 @@ public class Datum {
         this.weather = weather;
     }
 
-    public Integer getSnowDepth() {
+    public double getSnowDepth() {
         return snowDepth;
     }
 

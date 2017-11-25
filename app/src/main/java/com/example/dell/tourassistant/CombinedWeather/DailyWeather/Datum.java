@@ -56,7 +56,7 @@ public class Datum {
     private Double maxTemp;
     @SerializedName("snow_depth")
     @Expose
-    private Integer snowDepth;
+    private double snowDepth;
     @SerializedName("precip")
     @Expose
     private double precip;
@@ -210,7 +210,7 @@ public class Datum {
         this.maxTemp = maxTemp;
     }
 
-    public Integer getSnowDepth() {
+    public double getSnowDepth() {
         return snowDepth;
     }
 
