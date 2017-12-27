@@ -310,8 +310,9 @@ public class SingleEventFragment extends Fragment implements View.OnClickListene
 
         eventNameTV.setText("Tour: "+event.getDestination());
         fromDateTV.setText("From: "+event.getFromDate());
+
         toDateTV.setText("To: "+event.getToDate());
-        budgetTV.setText("Est. Budget"+String.valueOf(event.getBudget()));
+        budgetTV.setText("Est. Budget \n"+String.valueOf(event.getBudget())+ "ƒ");
         currentExpenseTV.setText("Expensed: "+String.valueOf(event.getTotalExpense())+"ƒ");
         double remainingBudget = event.getBudget() - event.getTotalExpense();
         remainingBudgetTV.setText("remaining: "+String.valueOf(remainingBudget)+"ƒ");

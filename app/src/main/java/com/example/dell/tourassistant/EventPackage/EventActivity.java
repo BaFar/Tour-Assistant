@@ -1,6 +1,8 @@
 package com.example.dell.tourassistant.EventPackage;
 
 import android.content.Intent;
+import android.os.AsyncTask;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
@@ -27,11 +29,14 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
-/*implements AddEventFragment.CreateEvent,SingleEventFragment.EventInterface */
-public class EventActivity extends AppCompatActivity implements AddEventFragment.CreateEvent,SingleEventFragment.EventInterface {
 
-      private ArrayList<Event> cEventList;
-      private ArrayList<Event> pEventList;
+public class EventActivity extends AppCompatActivity implements
+        AddEventFragment.CreateEvent,
+        SingleEventFragment.EventInterface,
+        MyTask.OnDataLoadListener{
+
+    private ArrayList<Event> cEventList;
+    private ArrayList<Event> pEventList;
     private FragmentManager fm = getSupportFragmentManager();
     private FragmentTransaction ft;
     private DatabaseReference databaseReference;
@@ -50,19 +55,20 @@ public class EventActivity extends AppCompatActivity implements AddEventFragment
 
 
         mBottomNV = (BottomNavigationView) findViewById(R.id.navigation);
+        cEventList = new ArrayList<Event>();
         userId = user.getUid();
-
         databaseReference = FirebaseDatabase.getInstance().getReference();
-
-
-
-
-           cEventList = new ArrayList<Event>();
-//         FirebaseDatabase.getInstance().setPersistenceEnabled(true);
          databaseReference= FirebaseDatabase.getInstance().getReference().child("users").child(userId).child("EventList");
 
 
-        databaseReference.addValueEventListener(new ValueEventListener() {
+         MyTask task = (MyTask) new MyTask();
+
+         task.setLoadListener(task.loadListener);
+
+         task.execute(databaseReference);
+
+
+       /* databaseReference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 cEventList = new ArrayList<Event>();
@@ -80,18 +86,12 @@ public class EventActivity extends AppCompatActivity implements AddEventFragment
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
+                Toast.makeText(EventActivity.this, "Database Error Occured", Toast.LENGTH_SHORT).show();
+                Log.d("datasnapshot","Database Error Occured");
 
             }
-        });
+        });*/
 
-
-        //Bundle bundle = new Bundle();
-       // bundle.putParcelableArrayList("comming events",cEventList);
-        AddEventFragment addEventFragment = new AddEventFragment();
-      //  addEventFragment.setArguments(bundle);
-        ft = fm.beginTransaction();
-        ft.add(R.id.eventFragmentContainer,addEventFragment);
-        ft.commit();
 
         mBottomNV.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
             @Override
@@ -121,11 +121,10 @@ public class EventActivity extends AppCompatActivity implements AddEventFragment
                 return true;
             }
         });
-        mBottomNV.setSelectedItemId(R.id.add_event_menu);
-
-
+        mBottomNV.setSelectedItemId(R.id.comming_event_menu);
 
     }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
@@ -136,9 +135,6 @@ public class EventActivity extends AppCompatActivity implements AddEventFragment
 
         return true;
     }
-
-
-
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle item selection
@@ -194,8 +190,6 @@ public class EventActivity extends AppCompatActivity implements AddEventFragment
             Log.d("logout","failed");
         }
     }
-
-
     @Override
     public void itemExpenseAdd(String eventKey, int position, String noteText,double amount,String curentTime) {
         databaseReference= FirebaseDatabase.getInstance().getReference().child("users").child(userId)
@@ -244,20 +238,86 @@ public class EventActivity extends AppCompatActivity implements AddEventFragment
 
 
     }
+
+    @Override
+    public void onDataLoaded(ArrayList<Event> events) {
+        Log.d("check1",events.get(0).getDestination());
+        Bundle bundle = new Bundle();
+        bundle.putParcelableArrayList("comming events",events);
+        CommingEventFragment commingEventFragment = new CommingEventFragment();
+        commingEventFragment.setArguments(bundle);
+        ft = fm.beginTransaction();
+        ft.add(R.id.eventFragmentContainer,commingEventFragment);
+        ft.commit();
+
+    }
 }
 
-/*
-*
-        DatabaseReference dbRefE =  FirebaseDatabase.getInstance().getReference().child("EventList").child(keyValue).child("ExpenseList");
-        DatabaseReference dbRefM =  FirebaseDatabase.getInstance().getReference().child("EventList").child(keyValue).child("MomentList");
-        Expense  expense = new Expense("Breakfast",60);
-        Moment moment = new Moment("Breakfast with local food",3);
 
-        dbRefE.setValue(expense);
-        dbRefM.setValue(moment);
+ class MyTask extends AsyncTask<DatabaseReference, Void,ArrayList<Event>> {
 
-         GenericTypeIndicator<ArrayList<Event>> indicator = new GenericTypeIndicator<ArrayList<Event>>() { };
-            cEventList = new ArrayList<Event>();
-                  cEventList = dataSnapshot.getValue(indicator);
-            int i = cEventList.get(0).getBudget();
-           */
+    public interface OnDataLoadListener{
+         void onDataLoaded(ArrayList<Event> events);
+    }
+
+     OnDataLoadListener loadListener;
+
+    public void setLoadListener(OnDataLoadListener loadListener){
+        this.loadListener = loadListener;
+        Log.d("setLoad","listener instance instanciated");
+    }
+
+    MyTask(){
+
+    }
+
+    @Override
+    protected ArrayList<Event> doInBackground(DatabaseReference... databaseReferences) {
+
+         DatabaseReference df = databaseReferences[0];
+        final ArrayList<Event> commingEvents = new ArrayList<>();
+        df.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+
+                for (DataSnapshot ds:dataSnapshot.getChildren()){
+                    Event event = new Event();
+                    event  = ds.getValue(Event.class);
+                    commingEvents.add(event);
+                }
+                Log.d("check_doIn","value: "+commingEvents.get(0).getDestination());
+
+            }
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+        return commingEvents;
+    }
+
+    @Override
+    protected void onPreExecute() {
+        super.onPreExecute();
+
+    }
+
+
+    @Override
+    protected void onPostExecute(ArrayList<Event> events) {
+        if (loadListener!=null){
+            String des = events.get(0).getDestination();
+            Log.d("check_doIn2","listener not null: value:"+des);
+            loadListener.onDataLoaded(events);
+        }
+        else{
+            Log.d("listener","Load listener isntance is null");
+            String des = events.get(0).getDestination();
+            Log.d("check_doIn2","listener null: value:"+des);
+            loadListener.onDataLoaded(events);
+
+        }
+
+    }
+}
+
