@@ -15,6 +15,8 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.dell.tourassistant.CombinedWeather.CurrentWeatherPackage.CurrentWeather;
@@ -28,6 +30,7 @@ import com.example.dell.tourassistant.CombinedWeather.HourlyWeather.CustomHourly
 import com.example.dell.tourassistant.CombinedWeather.HourlyWeather.HourlyForecastAdapter;
 import com.example.dell.tourassistant.CombinedWeather.HourlyWeather.HourlyWeather;
 import com.example.dell.tourassistant.CombinedWeather.HourlyWeather.HourlyWeatherClient;
+import com.example.dell.tourassistant.ConnectivityReceiver;
 import com.example.dell.tourassistant.R;
 
 import java.util.ArrayList;
@@ -49,6 +52,9 @@ public class WeatherActivity extends AppCompatActivity implements WeatherHomeFra
     private ArrayList<CustomHourlyWeather> hourlyDataList;
     private ArrayList<CustomDailyWeather> dailyDataList;
 
+    private TextView connectionStatusTV;
+    private Button tryAgainBtn;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,6 +62,10 @@ public class WeatherActivity extends AppCompatActivity implements WeatherHomeFra
         setContentView(R.layout.activity_weather);
 
         navigationView = (BottomNavigationView) findViewById(R.id.weather_bottom_nav);
+        connectionStatusTV = (TextView) findViewById(R.id.connectionStatusTV);
+        tryAgainBtn = (Button) findViewById(R.id.try_again_btn);
+
+
 
         double lat = 90.4786;
         double lon = 23.81435;
@@ -74,9 +84,7 @@ public class WeatherActivity extends AppCompatActivity implements WeatherHomeFra
     final double iLon = lon;
 
 
-        collectCurrentWeather(iLat, iLon);
-        collectHourlyWeather(iLat, iLon);
-        collectDailyWeather(iLat, iLon);
+
 
         navigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
             @Override
@@ -129,8 +137,50 @@ public class WeatherActivity extends AppCompatActivity implements WeatherHomeFra
         });
 
 
+        tryAgainBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (ConnectivityReceiver.isConnected()){
+                    collectCurrentWeather(iLat, iLon);
+                    collectHourlyWeather(iLat, iLon);
+                    collectDailyWeather(iLat, iLon);
+                    if(v.getVisibility() == View.VISIBLE){
+                        connectionStatusTV.setVisibility(View.GONE);
+                        tryAgainBtn.setVisibility(View.GONE);
+                    }
+                    connectionStatusTV.setVisibility(View.GONE);
+                    tryAgainBtn.setVisibility(View.GONE);
+                }
+                else {
+                    if (v.getVisibility() == View.GONE){
+                        connectionStatusTV.setVisibility(View.VISIBLE);
+                        tryAgainBtn.setVisibility(View.VISIBLE);
+                    }
+                    Toast.makeText(WeatherActivity.this, "Opps! No internet Connection. First check internet connection, please!", Toast.LENGTH_LONG).show();
+                    connectionStatusTV.setText("Opps! No internet Connection. First check internet connection, please!");
+                    return;
+                }
+            }
+        });
+
+
+        if (ConnectivityReceiver.isConnected()){
+            collectCurrentWeather(iLat, iLon);
+            collectHourlyWeather(iLat, iLon);
+            collectDailyWeather(iLat, iLon);
+            connectionStatusTV.setVisibility(View.GONE);
+            tryAgainBtn.setVisibility(View.GONE);
+        }
+        else {
+
+            Toast.makeText(WeatherActivity.this, "Opps! No internet Connection. First check internet connection, please!", Toast.LENGTH_LONG).show();
+            connectionStatusTV.setText("Opps! No internet Connection. First check internet connection, please!");
+            return;
+        }
+
 
     }
+
 
     private void collectCurrentWeather(double lat, double lon) {
 

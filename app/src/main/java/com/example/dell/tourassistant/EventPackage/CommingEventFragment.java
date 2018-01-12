@@ -44,10 +44,7 @@ public class CommingEventFragment extends Fragment {
         commingEventsLV = (ListView) v.findViewById(R.id.comming_event_LV);
 
         eventList = new ArrayList<>();
-        eventList = getArguments().getParcelableArrayList("comming events");
-        String msg = getArguments().getString("msg");
-        Toast.makeText(getActivity(), "received msg is: "+msg, Toast.LENGTH_SHORT).show();
-     //   Log.d("check",eventList.get(0).getDestination());
+        eventList = getArguments().getParcelableArrayList("comming_events");
         noOfEvents = eventList.size();
 
         return v;
@@ -76,6 +73,7 @@ public class CommingEventFragment extends Fragment {
                     bundle.putInt("event position",position);
                     fragment.setArguments(bundle);
                     ft.replace(R.id.eventFragmentContainer,fragment);
+                    ft.addToBackStack(null);
                     ft.commit();
 
                 }

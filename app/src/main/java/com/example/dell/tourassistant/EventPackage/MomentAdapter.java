@@ -1,12 +1,14 @@
 package com.example.dell.tourassistant.EventPackage;
 
 import android.content.Context;
+import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.dell.tourassistant.R;
@@ -33,9 +35,11 @@ public class MomentAdapter extends ArrayAdapter<Moment> {
         convertView = inflater.inflate(R.layout.moment_row,parent,false);
 
         TextView momentNoteTV = (TextView) convertView.findViewById(R.id.moment_note_);
-        TextView imagePathTV= (TextView) convertView.findViewById(R.id.image_path_);
-        momentNoteTV.setText(momentList.get(position).getMomentNote());
-        imagePathTV.setText(momentList.get(position).getImagePath());
+        ImageView momentIV=(ImageView) convertView.findViewById(R.id.moment_image);
+
+        momentNoteTV.setText(momentList.get(position).getMomentNote()+"\n\nTime: "+momentList.get(position).getMomentTime());
+        Uri photoUri = Uri.parse(momentList.get(position).getImagePath());
+        momentIV.setImageURI(photoUri);
         return convertView;
     }
 }

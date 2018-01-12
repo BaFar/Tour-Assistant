@@ -1,15 +1,19 @@
 package com.example.dell.tourassistant.PlacePackage;
 
 import android.Manifest;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Location;
+import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
@@ -17,6 +21,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
+import com.example.dell.tourassistant.PermissionUtil;
 import com.example.dell.tourassistant.R;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -30,7 +35,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class PlaceActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks,GoogleApiClient.OnConnectionFailedListener,LocationListener,HomeFragment.NearByListener{
+public class PlaceActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks,GoogleApiClient.OnConnectionFailedListener,LocationListener,HomeFragment.NearByListener,PermissionUtil.PermissionAskListener{
 
     private Intent intent;
     private double deslat;
@@ -38,12 +43,15 @@ public class PlaceActivity extends AppCompatActivity implements GoogleApiClient.
 
     private GoogleApiClient googleApiClient;
     private LocationRequest locationRequest;
-    private double currentLat=-33.8670522;
-    private double currentLon=151.1957362;
+    private double currentLat;
+    private double currentLon;
     private SharedPreferences preferences;
+    private SharedPreferences userCurrentLocationPreference;
     private PlaceApi placeApi;
 
     private ArrayList<SinglePlace> placeList;
+
+    private boolean isLocationGranted = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,16 +75,7 @@ public class PlaceActivity extends AppCompatActivity implements GoogleApiClient.
                 .addOnConnectionFailedListener(this)
                 .build();
 
-
-        preferences = getSharedPreferences("coordinate",MODE_PRIVATE);
-        SharedPreferences.Editor editor = preferences.edit();
-        editor.putFloat("desLat", (float) deslat);
-        editor.putFloat("desLon", (float) deslon);
-        editor.apply();
-        editor.commit();
-        //editor.putString("currentLat",String.valueOf(currentLat)).apply();
-        //preferences.edit().putString("currentLat",String.valueOf(currentLat)).apply();
-
+        userCurrentLocationPreference = getApplicationContext().getSharedPreferences("userCurrentLocationSharedPreference",MODE_PRIVATE);
         HomeFragment fragment = new HomeFragment();
         Bundle bundle= new Bundle();
         bundle.putString("msg","Welcome message");
@@ -88,19 +87,32 @@ public class PlaceActivity extends AppCompatActivity implements GoogleApiClient.
         ft.commit();
         ft.addToBackStack("HomeFragment");
 
-
         placeList=new ArrayList<SinglePlace>();
-
     }
+
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        googleApiClient.connect();
+        Log.d("location","location api connected");
+    }
+    @Override
+    protected void onPause() {
+        googleApiClient.disconnect();
+        Log.d("location","location api disconnected");
+        super.onPause();
+    }
+
+
     public void collectPlaceInfo(final String searchCatagory){
 
-        String lat= String.valueOf(preferences.getFloat("desLat",0));
-        String lon = String.valueOf(preferences.getFloat("desLon",0));;
-        Log.d("placeCallLatLon",""+lat+"\n" +lon);
+        String lat= String.valueOf(deslat);
+        String lon = String.valueOf(deslon);;
+        //Log.d("placeCallLatLon",""+lat+"\n" +lon);
         String radius="2000";
 
         String subUrl="json?location="+lat+","+lon+"&radius="+radius+"&type="+searchCatagory+"&key=AIzaSyAdt3XwQPIy5mKg3FrqyLaabVNd0gehToQ";
-        // String subUrl = "json?location=-33.8670522,151.1957362&radius=500&type=food&key=AIzaSyAdt3XwQPIy5mKg3FrqyLaabVNd0gehToQ";
         placeApi = RetrofitPlaceClient.getRetrofitPlaceClient().create(PlaceApi.class);
         Call<Places> placesCall=placeApi.getPlaceInfo(subUrl);
         placesCall.enqueue(new Callback<Places>() {
@@ -118,8 +130,8 @@ public class PlaceActivity extends AppCompatActivity implements GoogleApiClient.
                     placeList.clear();
 
                     Location A = new Location("cureent place");
-                    A.setLatitude(currentLat);
-                    A.setLongitude(currentLon);
+                    A.setLatitude(deslat);
+                    A.setLongitude(deslat);
                     Location B= new Location("Destination place");
 
                     for(int i=0; i<sz; i++){
@@ -159,7 +171,6 @@ public class PlaceActivity extends AppCompatActivity implements GoogleApiClient.
                     Toast.makeText(PlaceActivity.this, "Bad result", Toast.LENGTH_SHORT).show();
                     Log.d("response","bad response");
 
-
                 }
             }
 
@@ -183,6 +194,7 @@ public class PlaceActivity extends AppCompatActivity implements GoogleApiClient.
         FragmentManager fm = getSupportFragmentManager();
         FragmentTransaction ft = fm.beginTransaction();
         ft.replace(R.id.place_fragment_container,placeFragment);
+        ft.addToBackStack(null);
         ft.commit();
 
 
@@ -190,20 +202,15 @@ public class PlaceActivity extends AppCompatActivity implements GoogleApiClient.
 
     @Override
     public void onConnected(@Nullable Bundle bundle) {
-        locationRequest = new LocationRequest().setInterval(10000).setFastestInterval(5000).setPriority(locationRequest.PRIORITY_HIGH_ACCURACY);
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            Toast.makeText(this, " Location permission missing", Toast.LENGTH_SHORT).show();
-            Log.d("permission","No Location permission");
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
+
+        locationRequest = new LocationRequest().setInterval(15000).setFastestInterval(10000).setPriority(locationRequest.PRIORITY_HIGH_ACCURACY);
+       if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+        /*request location permission if missing*/
+        PermissionUtil.checkPermission(this,Manifest.permission.ACCESS_FINE_LOCATION,this);
             return;
         }
         LocationServices.FusedLocationApi.requestLocationUpdates(googleApiClient, locationRequest, this);
+       Log.d("location","current location requested");
 
     }
 
@@ -225,13 +232,11 @@ public class PlaceActivity extends AppCompatActivity implements GoogleApiClient.
 
         currentLat = location.getLatitude();
         currentLon = location.getLongitude();
-        Toast.makeText(this, "Location Changed and received", Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, "Location received, lat: "+currentLat+" Lon: "+currentLon, Toast.LENGTH_SHORT).show();
 
-        preferences.edit().putString("currentLat",String.valueOf(currentLat)).commit();
-        preferences.edit().putString("currentLat",String.valueOf(currentLat)).commit();
-        //   Latpreferences.edit().putString("currentLat",String.valueOf(currentLat)).commit();
-        //  SharedPreferences  LonPreference= getSharedPreferences("LonCoordinate",MODE_PRIVATE);
-        //  LonPreference.edit().putString("currentLon",String.valueOf(currentLon)).commit();
+        userCurrentLocationPreference.edit().putString("currentLat",String.valueOf(currentLat)).commit();
+        userCurrentLocationPreference.edit().putString("currentLat",String.valueOf(currentLat)).commit();
+
     }
 
     @Override
@@ -252,7 +257,7 @@ public class PlaceActivity extends AppCompatActivity implements GoogleApiClient.
         FragmentManager fm =getSupportFragmentManager();
         FragmentTransaction ft= fm.beginTransaction();
         ft.replace(R.id.place_fragment_container,mapFragment);
-        ft.addToBackStack("map");
+        ft.addToBackStack(null);
         ft.commit();
 
 
@@ -260,8 +265,8 @@ public class PlaceActivity extends AppCompatActivity implements GoogleApiClient.
 
     @Override
     public void onBackPressed(){
-        if (getSupportFragmentManager().getBackStackEntryCount() == 1){
-            finish();
+        if (getSupportFragmentManager().getBackStackEntryCount() > 1){
+            getSupportFragmentManager().popBackStack();
         }
         else {
             super.onBackPressed();
@@ -269,4 +274,62 @@ public class PlaceActivity extends AppCompatActivity implements GoogleApiClient.
     }
 
 
+    @Override
+    public void onNeedPermission() {
+        ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION},PermissionUtil.ACCESS_FINE_LOCATION_REQUEST_CODE);
+        Log.d("permission"," fine location requested: PlaceActivity");
+    }
+
+    @Override
+    public void onPermissionPreviouslyDenied() {
+
+        new AlertDialog.Builder(PlaceActivity.this)
+                .setTitle("Need Location Permission")
+                .setMessage("we must need location permission to find nearby places and measure distance.")
+                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.cancel();
+                        ActivityCompat.requestPermissions(PlaceActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION},PermissionUtil.ACCESS_FINE_LOCATION_REQUEST_CODE);
+                    }
+                })
+                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.cancel();
+                    }
+                }).show();
+    }
+
+    @Override
+    public void onPermissionDisabled() {
+        new AlertDialog.Builder(this)
+                .setTitle("Need Location Permission")
+                .setMessage("We must need location permission to find nearby places and measure distance of them." +
+                        "you can allow loaction from settings")
+                .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        Intent intent= new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+                    }
+                })
+                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+
+                    }
+                }).show();
+    }
+
+    @Override
+    public void onPermissionGranted() {
+        isLocationGranted = true;
+
+    }
 }
+/*
+*  String subUrl = "json?location=-33.8670522,151.1957362&radius=500&type=food&key=AIzaSyAdt3XwQPIy5mKg3FrqyLaabVNd0gehToQ";
+*
+*
+*
+* */

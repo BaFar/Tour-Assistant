@@ -77,7 +77,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,View.OnC
             mGoogleMap.addMarker(new MarkerOptions().position(latLng)
                     .title(placelist.get(i).getName()));
         }
-        LatLng latLng=new LatLng(placelist.get(0).getLat(),placelist.get(0).getLon());
+        LatLng latLng=new LatLng(placelist.get(1).getLat(),placelist.get(1).getLon());
         mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15));
         mGoogleMap.getUiSettings().setZoomControlsEnabled(true);
 

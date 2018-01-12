@@ -19,7 +19,9 @@ import android.widget.Toast;
 import com.example.dell.tourassistant.CombinedWeather.CurrentWeatherPackage.CurrentWeather;
 import com.example.dell.tourassistant.CombinedWeather.CurrentWeatherPackage.CurrentWeatherClient;
 import com.example.dell.tourassistant.CombinedWeather.CurrentWeatherPackage.Datum;
+import com.example.dell.tourassistant.ConnectivityReceiver;
 import com.example.dell.tourassistant.ExtraHelper;
+import com.example.dell.tourassistant.LoginActivity;
 import com.example.dell.tourassistant.R;
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
 import com.google.android.gms.common.GooglePlayServicesRepairableException;
@@ -96,6 +98,10 @@ public class WeatherHomeFragment extends Fragment {
             @Override
             public void onClick(View v) {
 
+                if (!ConnectivityReceiver.isConnected()){
+                    Toast.makeText(getActivity(), "Opps! No internet Connection. First check internet connection, please!", Toast.LENGTH_LONG).show();
+                    return;
+                }
                 selectPlace();
 
             }

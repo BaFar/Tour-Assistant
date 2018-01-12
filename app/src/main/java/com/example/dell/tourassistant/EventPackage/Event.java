@@ -18,8 +18,6 @@ public class Event implements Parcelable {
     private int budget;
     private String key;
     public double totalExpense=0;
-
-
     private ArrayList<Expense> expenseList;
     private ArrayList<Moment> momentList;
 
@@ -92,7 +90,10 @@ public class Event implements Parcelable {
     }
 
     public void addExpense(Expense expense){
-        expenseList.add(expense);
+        if (this.expenseList == null) {
+           this.expenseList = new ArrayList<>();
+        }
+        this.expenseList.add(expense);
         totalExpense = totalExpense+ expense.getExpenseAmount();
 
     }
@@ -101,6 +102,9 @@ public class Event implements Parcelable {
         return momentList;
     }
     public void addMoment(Moment moment){
+        if (this.momentList == null){
+            this.momentList = new ArrayList<Moment>();
+        }
         this.momentList.add(moment);
     }
 

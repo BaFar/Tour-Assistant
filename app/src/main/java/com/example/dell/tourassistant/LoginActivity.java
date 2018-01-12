@@ -1,9 +1,15 @@
 package com.example.dell.tourassistant;
 
+import android.*;
+import android.Manifest;
 import android.app.ProgressDialog;
+import android.content.BroadcastReceiver;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -21,12 +27,14 @@ import com.google.firebase.auth.FirebaseAuthUserCollisionException;
 import com.google.firebase.auth.FirebaseAuthWeakPasswordException;
 import com.google.firebase.auth.FirebaseUser;
 
-public class LoginActivity extends AppCompatActivity {
+import java.net.ConnectException;
+
+public class LoginActivity extends AppCompatActivity implements PermissionUtil.PermissionAskListener {
 
     EditText userEmail;
     EditText userPass;
     Button login;
-
+    private boolean isInternetPermissionAvailable = false;
     FirebaseAuth auth;
 
     ProgressDialog dialog;
@@ -53,15 +61,22 @@ public class LoginActivity extends AppCompatActivity {
         login = (Button) findViewById(R.id.loginBt);
         auth = FirebaseAuth.getInstance();
 
+        PermissionUtil.checkPermission(this, Manifest.permission.INTERNET,this);
+
         login.setOnClickListener(new View.OnClickListener() {
-
-
             @Override
             public void onClick(View v) {
 
+                if(!isInternetPermissionAvailable){
 
+                    Toast.makeText(LoginActivity.this, "You must allow internet permission", Toast.LENGTH_SHORT).show();
+                    return;
+                }
 
-
+                if (!ConnectivityReceiver.isConnected()){
+                    Toast.makeText(LoginActivity.this, "Opps! No internet Connection. First check internet connection, please!", Toast.LENGTH_LONG).show();
+                    return;
+                }
 
                 final String email = userEmail.getText().toString();
                 final String pass = userPass.getText().toString();
@@ -137,5 +152,42 @@ public class LoginActivity extends AppCompatActivity {
         Intent intent = new Intent(LoginActivity.this,SignupActivity.class);
         startActivity(intent);
     }
+
+    @Override
+    public void onNeedPermission() {
+
+        ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.INTERNET}, PermissionUtil.INTERNET_REQUEST_CODE);
+        Log.d("permission","Internet permission requested:loginActivity");
+    }
+
+    @Override
+    public void onPermissionPreviouslyDenied() {
+
+    }
+
+    @Override
+    public void onPermissionDisabled() {
+
+    }
+
+    @Override
+    public void onPermissionGranted() {
+
+        isInternetPermissionAvailable = true;
+        Log.d("permission","got internet connection");
+    }
+
+   /* @Override
+    protected void onResume() {
+        super.onResume();
+
+        final IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
+        ConnectivityReceiver receiver = new ConnectivityReceiver();
+
+        registerReceiver(receiver,intentFilter);
+
+        MyApplication.getInstance().setConnectivityReceiverListener(this);
+    }*/
 }
 

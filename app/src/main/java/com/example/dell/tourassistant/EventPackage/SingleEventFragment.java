@@ -1,6 +1,7 @@
 package com.example.dell.tourassistant.EventPackage;
 
 
+import android.Manifest;
 import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.content.Context;
@@ -12,7 +13,9 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.provider.Settings;
 import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
@@ -30,6 +33,7 @@ import android.widget.Toast;
 
 import com.example.dell.tourassistant.CombinedWeather.WeatherActivity;
 import com.example.dell.tourassistant.ExtraHelper;
+import com.example.dell.tourassistant.PermissionUtil;
 import com.example.dell.tourassistant.PlacePackage.PlaceActivity;
 import com.example.dell.tourassistant.R;
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
@@ -38,9 +42,16 @@ import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.ui.PlacePicker;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -49,7 +60,7 @@ import java.util.Date;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class SingleEventFragment extends Fragment implements View.OnClickListener {
+public class SingleEventFragment extends Fragment implements View.OnClickListener{
 
     final int  PLACE_PICKER_REQUEST_CODE = 1;
     private EventInterface eventInterface;
@@ -75,8 +86,10 @@ public class SingleEventFragment extends Fragment implements View.OnClickListene
     static final int REQUEST_IMAGE_CAPTURE = 2;
     private String mCurrentPhotoPath=null;
     private ImageView mPhotoView = null;
-    private Bitmap mBitmap;
+    //private Bitmap mBitmap;
     private EditText destinationET;
+    private Bitmap rowImageBitmap;
+
 
     public SingleEventFragment() {
         // Required empty public constructor
@@ -90,10 +103,11 @@ public class SingleEventFragment extends Fragment implements View.OnClickListene
         // Inflate the layout for this fragment
         View v= inflater.inflate(R.layout.fragment_single_event, container, false);
 
+
+
         expenseBuilder = new AlertDialog.Builder(getActivity());
         momentBuilder = new AlertDialog.Builder(getActivity());
         eventEditBuilder = new AlertDialog.Builder(getActivity());
-
 
         event =  getArguments().getParcelable("single event");
         eventPosition = getArguments().getInt("event position");
@@ -140,19 +154,24 @@ public class SingleEventFragment extends Fragment implements View.OnClickListene
     }
 
     private void createAddMomentDialog() {
+
         LayoutInflater inflater = getActivity().getLayoutInflater();
         final View dview=inflater.inflate(R.layout.add_moment, null);
         final EditText noteTextET = (EditText) dview.findViewById(R.id.moment_note);
         final TextView imagePathTV = (TextView) dview.findViewById(R.id.image_path);
         mPhotoView = (ImageView) dview.findViewById(R.id.moment_photo);
         final Button photoCaptureBtn = (Button) dview.findViewById(R.id.photo_capture_Btn);
-        noteTextET.setHint("Note Moment");
+
+
+
         photoCaptureBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
-                dispatchTakePictureIntent(v);
-                imagePathTV.setText(mCurrentPhotoPath);
+                Intent imageCaptureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                startActivityForResult(imageCaptureIntent,REQUEST_IMAGE_CAPTURE);
+               // mCurrentPhotoPath = "dummy path";
+               // imagePathTV.setText(mCurrentPhotoPath);
             }
         });
 
@@ -165,9 +184,18 @@ public class SingleEventFragment extends Fragment implements View.OnClickListene
 
 
                         String noteText= noteTextET.getText().toString();
-                        String imagePath= mCurrentPhotoPath;
-                        //   Toast.makeText(getContext(), ""+purpose+" "+amount, Toast.LENGTH_SHORT).show();
-                        eventInterface.itemMomentAdd(eventKey,eventPosition,noteText,imagePath, ExtraHelper.getCurrentTime());        /*code 2 is moment*/
+//                        if (rowImageBitmap != null){
+//
+//                            saveImage();/*save image to folder first*/
+//                        }
+
+                        eventInterface.itemMomentAdd(eventKey,eventPosition,noteText,rowImageBitmap);        /*code 2 is moment*/
+                        noteTextET.setText("");
+                        noteTextET.setHint("Note Moment");
+                        mPhotoView.setImageResource(R.drawable.gallary);
+                        imagePathTV.setText("");
+                        rowImageBitmap = null;
+
 
                     }
                 })
@@ -180,6 +208,7 @@ public class SingleEventFragment extends Fragment implements View.OnClickListene
                 });
         momentDialog =  momentBuilder.create();
     }
+
 
     private void createAddExpenseDialog() {
         LayoutInflater inflater = getActivity().getLayoutInflater();
@@ -306,8 +335,6 @@ public class SingleEventFragment extends Fragment implements View.OnClickListene
         createEditEvent();
 
 
-
-
         eventNameTV.setText("Tour: "+event.getDestination());
         fromDateTV.setText("From: "+event.getFromDate());
 
@@ -324,20 +351,23 @@ public class SingleEventFragment extends Fragment implements View.OnClickListene
         expenseProgress.setProgress((int)event.getTotalExpense());
         expenseProgress.setMinimumWidth(20);
 
-        ArrayList<Expense> expenseList= new ArrayList<>();
-        ArrayList<Moment> momentList= new ArrayList<>();
-        expenseList = event.getExpenseList();
-        momentList = event.getMomentList();
+        ArrayList<Expense> expenseList= event.getExpenseList();
+        ArrayList<Moment> momentList=  event.getMomentList();
 
-        ExpenseAdapter expenseAdapter = new ExpenseAdapter(getActivity(),expenseList);
-        expenseLV.setAdapter(expenseAdapter);
-        MomentAdapter momentAdapter = new MomentAdapter(getActivity(),momentList);
-        momentLV.setAdapter(momentAdapter);
+
+        if (expenseList != null){
+            ExpenseAdapter expenseAdapter = new ExpenseAdapter(getActivity(),expenseList);
+            expenseLV.setAdapter(expenseAdapter);
+        }
+        if (momentList != null){
+            MomentAdapter momentAdapter = new MomentAdapter(getActivity(),momentList);
+            momentLV.setAdapter(momentAdapter);
+        }
+
+
+
 
     }
-
-
-
     @Override
     public void onClick(View v) {
         switch (v.getId()){
@@ -367,6 +397,8 @@ public class SingleEventFragment extends Fragment implements View.OnClickListene
                 expenseDialog.show();
                 break;
             case R.id.add_momentBtn:
+                boolean permission = checkCameraAndStoragePermission();
+                if (!permission) break;
                 momentDialog.show();
                 break;
             case R.id.event_edit_btn:
@@ -393,6 +425,92 @@ public class SingleEventFragment extends Fragment implements View.OnClickListene
         }
     }
 
+
+
+    private boolean checkCameraAndStoragePermission() {
+        final boolean[] cameraPermission = {false};
+        final boolean[] storagePermission = {false};
+        PermissionUtil.checkPermission(getActivity(), Manifest.permission.CAMERA, new PermissionUtil.PermissionAskListener() {
+            @Override
+            public void onNeedPermission() {
+                ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.CAMERA},PermissionUtil.CAMERA_REQUEST_CODE);
+            }
+
+            @Override
+            public void onPermissionPreviouslyDenied() {
+                new AlertDialog.Builder(getActivity())
+                        .setTitle("Need Camera Permission")
+                        .setMessage("we must need camera permission to take picture for your moment.")
+                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.cancel();
+                                ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.CAMERA},PermissionUtil.CAMERA_REQUEST_CODE);;
+                            }
+                        })
+                        .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.cancel();
+                            }
+                        }).show();
+            }
+
+            @Override
+            public void onPermissionDisabled() {
+                Toast.makeText(getActivity(), "To take picture app must need need permission, please allow from settings", Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onPermissionGranted() {
+                cameraPermission[0] = true;
+            }
+        });
+
+        PermissionUtil.checkPermission(getActivity(), Manifest.permission.WRITE_EXTERNAL_STORAGE, new PermissionUtil.PermissionAskListener() {
+            @Override
+            public void onNeedPermission() {
+                ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},PermissionUtil.APP_SETTINGS_REQUEST_CODE);
+                Log.d("permission","Write external storage permission asked");
+
+            }
+
+            @Override
+            public void onPermissionPreviouslyDenied() {
+                new AlertDialog.Builder(getActivity())
+                        .setTitle("Need Storage Permission")
+                        .setMessage("we must need External Storage permission to save picture for your moment.")
+                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.cancel();
+                                ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},PermissionUtil.WRITE_EXTERNAL_STORAGE_REQUEST_CODE);
+                            }
+                        })
+                        .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.cancel();
+                            }
+                        }).show();
+            }
+
+            @Override
+            public void onPermissionDisabled() {
+                Toast.makeText(getActivity(), "We must need Write External Storage permission to save photo." +
+                        "allow from settings", Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onPermissionGranted() {
+                storagePermission[0] = true;
+            }
+        });
+
+        if (cameraPermission[0] ==true && storagePermission[0]==true) return true;
+        else return false;
+    }
+
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
@@ -402,7 +520,7 @@ public class SingleEventFragment extends Fragment implements View.OnClickListene
 
     public interface EventInterface {
         void itemExpenseAdd(String eventKey, int position, String noteText,double amount,String curentTime);
-        void itemMomentAdd(String eventKey, int position, String noteText, String imagePath,String currentTime);
+        void itemMomentAdd(String eventKey, int position, String noteText,Bitmap bm);
         void eventEdit(String eventKey, int eventPosition, String Destination, String fromDate, String toDate, int budget,double lat,double lon);
         void eventDelete(String eventKey, int eventPosition);
 
@@ -452,84 +570,13 @@ public class SingleEventFragment extends Fragment implements View.OnClickListene
                 // The user canceled the operation.
             }
         }
-        else  if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == Activity.RESULT_OK) {
-            setPic();
+        else  if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == Activity.RESULT_OK && data != null) {
+
+           rowImageBitmap = (Bitmap) data.getExtras().get("data");
+            mPhotoView.setImageBitmap( rowImageBitmap );
         }
     }
 
-    public void dispatchTakePictureIntent(View view) {
-        Toast.makeText(getActivity(), "clicked", Toast.LENGTH_SHORT).show();
-        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        // Ensure that there's a camera activity to handle the intent
-        if (takePictureIntent.resolveActivity(getActivity().getPackageManager()) != null) {
-            // Create the File where the photo should go
-            File photoFile = null;
-            try {
-                photoFile = createImageFile();
 
-            } catch (IOException ex) {
-                // Error occurred while creating the File
-                Log.e("photo","file create failed");
-            }
-            // Continue only if the File was successfully created
-            if (photoFile != null) {
-
-                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(photoFile));
-                startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
-            }
-
-        }
-        else {
-            Toast.makeText(getActivity(), "this device has no camera app", Toast.LENGTH_SHORT).show();
-        }
-
-
-    }
-    private File createImageFile() throws IOException {
-        // Create an image file name
-        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-        String imageFileName = "JPEG_" + timeStamp + "_";
-        String folder_main = "eventPictures";
-
-
-        // File f = new File(getExternalStorageDirectory(Environment.DIRECTORY_PICTURES),folder_main);
-        File storageDir = getActivity().getExternalFilesDir(Environment.DIRECTORY_PICTURES);
-        //  File storageDir = new File(getExternalFilesDir(Environment.DIRECTORY_PICTURES),folder_main);
-
-        File image = File.createTempFile(
-                imageFileName,  /* prefix */
-                ".jpg",         /* suffix */
-                storageDir      /* directory */
-        );
-
-        // Save a file: path for use with ACTION_VIEW intents
-
-        mCurrentPhotoPath = image.getAbsolutePath();
-        Toast.makeText(getActivity(), ""+mCurrentPhotoPath, Toast.LENGTH_SHORT).show();
-        return image;
-    }
-    private void setPic() {
-        // Get the dimensions of the View
-        int targetW = mPhotoView.getWidth();
-        int targetH = mPhotoView.getHeight();
-
-        // Get the dimensions of the bitmap
-        BitmapFactory.Options bmOptions = new BitmapFactory.Options();
-        bmOptions.inJustDecodeBounds = true;
-        BitmapFactory.decodeFile(mCurrentPhotoPath, bmOptions);
-        int photoW = bmOptions.outWidth;
-        int photoH = bmOptions.outHeight;
-
-        // Determine how much to scale down the image
-        int scaleFactor = Math.min(photoW/targetW, photoH/targetH);
-
-        // Decode the image file into a Bitmap sized to fill the View
-        bmOptions.inJustDecodeBounds = false;
-        bmOptions.inSampleSize = scaleFactor;
-        bmOptions.inPurgeable = true;
-
-        mBitmap = BitmapFactory.decodeFile(mCurrentPhotoPath, bmOptions);
-        mPhotoView.setImageBitmap(mBitmap);
-    }
 
 }

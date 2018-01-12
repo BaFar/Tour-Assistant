@@ -1,13 +1,16 @@
 package com.example.dell.tourassistant.EventPackage;
 
+import android.content.DialogInterface;
 import android.content.Intent;
-import android.os.AsyncTask;
-import android.os.Handler;
+import android.graphics.Bitmap;
+import android.net.Uri;
+import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -17,9 +20,14 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
+import com.example.dell.tourassistant.ExtraHelper;
 import com.example.dell.tourassistant.LoginActivity;
 import com.example.dell.tourassistant.R;
 import com.example.dell.tourassistant.SignupActivity;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -27,13 +35,21 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 
 public class EventActivity extends AppCompatActivity implements
         AddEventFragment.CreateEvent,
-        SingleEventFragment.EventInterface,
-        MyTask.OnDataLoadListener{
+        SingleEventFragment.EventInterface{
 
     private ArrayList<Event> cEventList;
     private ArrayList<Event> pEventList;
@@ -42,7 +58,8 @@ public class EventActivity extends AppCompatActivity implements
     private DatabaseReference databaseReference;
     private String userId;
     FirebaseAuth auth = FirebaseAuth.getInstance();
-    FirebaseUser user = auth.getCurrentUser();
+    FirebaseUser user;
+    private StorageReference mstorageRef;
 
     private BottomNavigationView mBottomNV;
 
@@ -53,35 +70,25 @@ public class EventActivity extends AppCompatActivity implements
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_event);
 
-
         mBottomNV = (BottomNavigationView) findViewById(R.id.navigation);
         cEventList = new ArrayList<Event>();
+
+         user = auth.getCurrentUser();
         userId = user.getUid();
-        databaseReference = FirebaseDatabase.getInstance().getReference();
-         databaseReference= FirebaseDatabase.getInstance().getReference().child("users").child(userId).child("EventList");
+        databaseReference= FirebaseDatabase.getInstance().getReference().child("users").child(userId).child("EventList");
+        mstorageRef = FirebaseStorage.getInstance().getReference().child("users").child(userId);
 
-
-         MyTask task = (MyTask) new MyTask();
-
-         task.setLoadListener(task.loadListener);
-
-         task.execute(databaseReference);
-
-
-       /* databaseReference.addValueEventListener(new ValueEventListener() {
+        databaseReference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 cEventList = new ArrayList<Event>();
                 for(DataSnapshot ds: dataSnapshot.getChildren()){
-
                     Event event = new Event();
                     event = ds.getValue(Event.class);
                     cEventList.add(event);
 
                 }
-
-               Log.d("commingEvents:",""+cEventList.size());
-
+                onDataLoaded(cEventList);
             }
 
             @Override
@@ -90,7 +97,7 @@ public class EventActivity extends AppCompatActivity implements
                 Log.d("datasnapshot","Database Error Occured");
 
             }
-        });*/
+        });
 
 
         mBottomNV.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -104,7 +111,7 @@ public class EventActivity extends AppCompatActivity implements
                     case R.id.comming_event_menu:
                         fragment = new CommingEventFragment();
                         Bundle bundle = new Bundle();
-                        bundle.putParcelableArrayList("comming events",cEventList);
+                        bundle.putParcelableArrayList("comming_events",cEventList);
                         fragment.setArguments(bundle);
                         break;
                     case R.id.past_event_menu:
@@ -115,15 +122,16 @@ public class EventActivity extends AppCompatActivity implements
                         break;
                 }
 
-
                 transaction.replace(R.id.eventFragmentContainer,fragment);
+                transaction.addToBackStack(null);
                 transaction.commit();
                 return true;
             }
         });
-        mBottomNV.setSelectedItemId(R.id.comming_event_menu);
+
 
     }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -141,6 +149,9 @@ public class EventActivity extends AppCompatActivity implements
         switch (item.getItemId()) {
             case R.id.profile:
                 return true;
+            case R.id.delete_acc:
+                deleteAccount();
+                return true;
             case R.id.logout:
                 auth.signOut();
                 FirebaseUser user = auth.getCurrentUser();
@@ -153,6 +164,82 @@ public class EventActivity extends AppCompatActivity implements
                 return super.onOptionsItemSelected(item);
         }
     }
+    private void deleteAccount(){
+        final boolean[] shouldRemove = {false};
+        final boolean[] isAllDeleted = {true};
+
+        new AlertDialog.Builder(this)
+                .setTitle("Delete Account?")
+                .setMessage("Deleting your account delete all of your content like picture and other data. Continue?")
+                .setPositiveButton("Delete Account", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.cancel();
+                        shouldRemove[0] = true;
+                    }
+                }).setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.cancel();
+                shouldRemove[0] = false;
+            }
+        }).show();
+
+        if (!shouldRemove[0]) return;/*return from the method without removing account*/
+
+        /*before removing user delete all data*/
+        DatabaseReference reference = databaseReference= FirebaseDatabase.getInstance().getReference().child("users").child(userId);
+
+        reference.removeValue().addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+                Log.d("Delete","Firebase data deleted successfully");
+
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Log.d("Delete","Firebase data deletion failed");
+                isAllDeleted[0] = false;
+            }
+        });
+        StorageReference storageReference = FirebaseStorage.getInstance().getReference().child("users").child(userId);
+        storageReference.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+                Log.d("Delete","Firebase storage deleted successfully");
+
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Log.d("Delete","Firebase storage deletion failed");
+                isAllDeleted[0] = false;
+            }
+        });
+
+
+        /*check all data deleted or not*/
+        if (!isAllDeleted[0]){
+            Toast.makeText(this, "Sorry,data deletion failed. account can't be deleted now.", Toast.LENGTH_LONG).show();
+            return;
+        }
+
+        user.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+                Toast.makeText(EventActivity.this, "User Account deleted sucessfully", Toast.LENGTH_SHORT).show();
+                /*clear all backstack here*/
+                startActivity(new Intent(EventActivity.this, LoginActivity.class));
+                finish();
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+
+            }
+        });
+    }
     @Override
     public void createEventClicked(String destination, int budget, String fromDate, String toDate, double lattitude, double longitude) {
 
@@ -164,17 +251,7 @@ public class EventActivity extends AppCompatActivity implements
 
         Event event = new Event(destination,fromDate,toDate, budget,lattitude,longitude);
         event.setKey(keyValue);
-        event.addExpense(new Expense("Breakfast",60,"27/12/17 2:30pm"));
-
-        event.addMoment(new Moment("Dinner with local food","simple path","27/12/17 2:30pm"));
         databaseReference.child(keyValue).setValue(event);
-
-        event.addExpense(new Expense("Dinner",90,"27/12/17 2:30pm"));
-        event.addMoment(new Moment("break fast with local food","simple path","27/12/17 2:30pm"));
-
-        databaseReference.child(keyValue).setValue(event);
-
-
 
     }
 
@@ -195,7 +272,7 @@ public class EventActivity extends AppCompatActivity implements
         databaseReference= FirebaseDatabase.getInstance().getReference().child("users").child(userId)
                 .child("EventList").child(eventKey);
 
-        Event event =cEventList.get(position);
+        Event event = cEventList.get(position);
         event.addExpense(new Expense(noteText,amount,curentTime));
         databaseReference.setValue(event);
         Toast.makeText(this, "Expense Added", Toast.LENGTH_SHORT).show();
@@ -204,15 +281,89 @@ public class EventActivity extends AppCompatActivity implements
     }
 
     @Override
-    public void itemMomentAdd(String eventKey, int position, String noteText, String imagePath, String currentTime) {
-        databaseReference= FirebaseDatabase.getInstance().getReference().child("users").child(userId)
-                .child("EventList").child(eventKey);
+    public void itemMomentAdd(String eventKey, int position, String noteText, Bitmap bm) {
+        Uri photoPathUri = null;
+        databaseReference= FirebaseDatabase.getInstance().getReference().child("users").child(userId).child("EventList").child(eventKey);
         Event event = cEventList.get(position);
-        event.addMoment(new Moment(noteText,imagePath,currentTime));
+        String eventName = event.getDestination();
+        if (bm!=null){
+            Log.d("bitmap","bitmap is not null");
+            photoPathUri =  saveImage(eventName,bm);
+        }
+        Moment moment = new Moment(noteText,photoPathUri.toString(), ExtraHelper.getCurrentTime());
+        event.addMoment(moment);
         databaseReference.setValue(event);
         Toast.makeText(this, "Moment Added", Toast.LENGTH_SHORT).show();
+        if (photoPathUri !=null ){
+            backUpPhoto(eventName,photoPathUri, databaseReference,position, moment);
+        }
+
 
     }
+
+    private Uri saveImage(String eventName, Bitmap bitmap) {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd_hh_mm_ss");
+        String photoName = sdf.format(new Date());
+        String root = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).toString();
+
+        File folder = new File(root+"/"+eventName);
+        folder.mkdirs();
+
+        File my_file = new File(folder,photoName+".png");
+
+        try {
+            FileOutputStream stream = new FileOutputStream(my_file);
+            bitmap.compress(Bitmap.CompressFormat.PNG,100,stream);
+            stream.flush();
+            stream.close();
+            Log.d("saveImage","Image saved successfully");
+            Toast.makeText(this, "Image saved successfully", Toast.LENGTH_SHORT).show();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+            Log.d("saveImage",e.getMessage());
+        } catch (IOException e) {
+            e.printStackTrace();
+            Log.d("saveImage",e.getMessage());
+        }
+
+        Uri uri = Uri.fromFile(new File(root+"/"+eventName+"/"+photoName+".png"));
+        return uri;
+
+
+    }
+
+    private void backUpPhoto(String eventName, Uri photoPathUri,DatabaseReference dbRef, final int position, final Moment moment){
+        String photoName = photoPathUri.getLastPathSegment();
+        StorageReference photoRef = mstorageRef.child(eventName+"/photos/"+photoName);
+
+        photoRef.putFile(photoPathUri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+            @Override
+            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                Uri downloadUri = taskSnapshot.getDownloadUrl();
+                Log.d("uri","online backup successfull, updating to firebase");
+                moment.setDownloadUri(downloadUri.toString());
+                Event event = cEventList.get(position);
+                int numberOfEvents = event.getMomentList().size();
+                if (numberOfEvents > 0 ){
+                    String time =event.getMomentList().get(numberOfEvents-1).getMomentTime();
+                    if (time.equals(moment.getMomentTime())){
+                        event.getMomentList().remove(numberOfEvents-1);
+                    }
+                }
+                event.addMoment(moment);
+                databaseReference.setValue(event);
+
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Log.d("backUpPhoto","photo backup failed: "+e.getMessage());
+            }
+        });
+
+
+    }
+
 
     @Override
     public void eventEdit(String eventKey, int eventPosition, String Destination, String fromDate, String toDate, int budget,double lat,double lon) {
@@ -239,85 +390,26 @@ public class EventActivity extends AppCompatActivity implements
 
     }
 
-    @Override
     public void onDataLoaded(ArrayList<Event> events) {
-        Log.d("check1",events.get(0).getDestination());
         Bundle bundle = new Bundle();
-        bundle.putParcelableArrayList("comming events",events);
+        bundle.putParcelableArrayList("comming_events",events);
         CommingEventFragment commingEventFragment = new CommingEventFragment();
         commingEventFragment.setArguments(bundle);
         ft = fm.beginTransaction();
         ft.add(R.id.eventFragmentContainer,commingEventFragment);
+        ft.addToBackStack(null);
         ft.commit();
 
     }
-}
-
-
- class MyTask extends AsyncTask<DatabaseReference, Void,ArrayList<Event>> {
-
-    public interface OnDataLoadListener{
-         void onDataLoaded(ArrayList<Event> events);
-    }
-
-     OnDataLoadListener loadListener;
-
-    public void setLoadListener(OnDataLoadListener loadListener){
-        this.loadListener = loadListener;
-        Log.d("setLoad","listener instance instanciated");
-    }
-
-    MyTask(){
-
-    }
-
-    @Override
-    protected ArrayList<Event> doInBackground(DatabaseReference... databaseReferences) {
-
-         DatabaseReference df = databaseReferences[0];
-        final ArrayList<Event> commingEvents = new ArrayList<>();
-        df.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-
-                for (DataSnapshot ds:dataSnapshot.getChildren()){
-                    Event event = new Event();
-                    event  = ds.getValue(Event.class);
-                    commingEvents.add(event);
-                }
-                Log.d("check_doIn","value: "+commingEvents.get(0).getDestination());
-
-            }
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
-        return commingEvents;
-    }
-
-    @Override
-    protected void onPreExecute() {
-        super.onPreExecute();
-
-    }
 
 
     @Override
-    protected void onPostExecute(ArrayList<Event> events) {
-        if (loadListener!=null){
-            String des = events.get(0).getDestination();
-            Log.d("check_doIn2","listener not null: value:"+des);
-            loadListener.onDataLoaded(events);
+    public void onBackPressed() {
+        if (getSupportFragmentManager().getBackStackEntryCount() > 0){
+            getSupportFragmentManager().popBackStack();
         }
         else{
-            Log.d("listener","Load listener isntance is null");
-            String des = events.get(0).getDestination();
-            Log.d("check_doIn2","listener null: value:"+des);
-            loadListener.onDataLoaded(events);
-
+            super.onBackPressed();
         }
-
     }
 }
-

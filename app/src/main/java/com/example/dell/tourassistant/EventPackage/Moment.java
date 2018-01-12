@@ -10,9 +10,11 @@ import android.os.Parcelable;
 public class Moment implements Parcelable{
     private String momentNote;
     private String imagePath;
+    private String downloadUri;
     private String momentTime;
 
-    public Moment(String momentNote, String imagePath,String momentTime) {
+
+    public Moment(String momentNote, String imagePath, String momentTime) {
         this.momentNote = momentNote;
         this.imagePath = imagePath;
         this.momentTime = momentTime;
@@ -21,6 +23,7 @@ public class Moment implements Parcelable{
     protected Moment(Parcel in) {
         momentNote = in.readString();
         imagePath = in.readString();
+        downloadUri = in.readString();
         momentTime = in.readString();
     }
 
@@ -39,6 +42,7 @@ public class Moment implements Parcelable{
     protected void Moment(Parcel in){
         momentNote = in.readString();
         imagePath = in.readString();
+        downloadUri = in.readString();
         momentTime = in.readString();
     }
 
@@ -54,7 +58,9 @@ public class Moment implements Parcelable{
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(this.momentNote);
         dest.writeString(this.imagePath);
+        dest.writeString(this.downloadUri);
         dest.writeString(this.momentTime);
+
     }
 
     public String getMomentNote() {
@@ -68,4 +74,15 @@ public class Moment implements Parcelable{
     public String getMomentTime() {
         return momentTime;
     }
+
+    public String getDownloadUri() {
+        return downloadUri;
+    }
+
+    public void setDownloadUri(String downloadUri) {
+        this.downloadUri = downloadUri;
+    }
+
+
+
 }

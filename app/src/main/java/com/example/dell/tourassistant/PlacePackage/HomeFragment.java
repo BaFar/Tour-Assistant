@@ -14,6 +14,7 @@
         import android.widget.Toast;
 
 
+        import com.example.dell.tourassistant.ConnectivityReceiver;
         import com.example.dell.tourassistant.R;
 
         import retrofit2.Call;
@@ -87,6 +88,10 @@ public class HomeFragment extends Fragment implements View.OnClickListener{
     @Override
     public void onClick(View v) {
 
+        if (!ConnectivityReceiver.isConnected()){
+            Toast.makeText(getActivity(), "Opps! No internet Connection. First check internet connection, please!", Toast.LENGTH_LONG).show();
+            return;
+        }
 
         String catagory=null;
         switch (v.getId()){

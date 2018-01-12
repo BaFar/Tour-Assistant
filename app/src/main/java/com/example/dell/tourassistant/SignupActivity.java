@@ -1,8 +1,11 @@
 package com.example.dell.tourassistant;
 
+import android.*;
+import android.Manifest;
 import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -18,7 +21,7 @@ import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
 import com.google.firebase.auth.FirebaseAuthUserCollisionException;
 import com.google.firebase.auth.FirebaseAuthWeakPasswordException;
 
-public class SignupActivity extends AppCompatActivity {
+public class SignupActivity extends AppCompatActivity  implements PermissionUtil.PermissionAskListener{
 
     private EditText username;
     private EditText useremail;
@@ -26,6 +29,7 @@ public class SignupActivity extends AppCompatActivity {
     private Button submit;
     private FirebaseAuth auth;
     ProgressDialog dialog;
+    private boolean isInternetPermissionAvailable = false;
 
 
 
@@ -41,9 +45,19 @@ public class SignupActivity extends AppCompatActivity {
 
         auth = FirebaseAuth.getInstance();
 
+        PermissionUtil.checkPermission(this,Manifest.permission.INTERNET,this);
         submit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                if (!isInternetPermissionAvailable){
+                    Toast.makeText(SignupActivity.this, "You must allow internet permission", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                if (!ConnectivityReceiver.isConnected()){
+                    Toast.makeText(SignupActivity.this, "Opps! No internet Connection. First check internet connection, please!", Toast.LENGTH_LONG).show();
+                    return;
+                }
                 validition();
             }
         });
@@ -105,14 +119,29 @@ public class SignupActivity extends AppCompatActivity {
             });
 
         }
+    }
 
+    @Override
+    public void onNeedPermission() {
+        ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.INTERNET},PermissionUtil.INTERNET_REQUEST_CODE);
+        Log.d("permission","Internet Permission requested:SignUp Activity");
+    }
 
-
-
-
+    @Override
+    public void onPermissionPreviouslyDenied() {
 
     }
 
+    @Override
+    public void onPermissionDisabled() {
+
+    }
+
+    @Override
+    public void onPermissionGranted() {
+        isInternetPermissionAvailable = true;
+        Log.d("permission","Internet permission granted");
 
 
+    }
 }

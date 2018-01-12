@@ -19,6 +19,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.dell.tourassistant.ConnectivityReceiver;
 import com.example.dell.tourassistant.R;
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
 import com.google.android.gms.common.GooglePlayServicesRepairableException;
@@ -82,7 +83,10 @@ public class AddEventFragment extends Fragment implements View.OnClickListener{
         destinationET.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                if (!ConnectivityReceiver.isConnected()){
+                    Toast.makeText(getActivity(), "Opps! No internet Connection. First check internet connection, please!", Toast.LENGTH_LONG).show();
+                    return;
+                }
 
                 selectPlace(v);
                // destinationET.setText(placeName);
@@ -158,7 +162,10 @@ public class AddEventFragment extends Fragment implements View.OnClickListener{
                 pickerDialog.show();
                 break;
             case R.id.eventCreateBtn:
-
+                if (!ConnectivityReceiver.isConnected()){
+                    Toast.makeText(getActivity(), "Opps! No internet Connection. First check internet connection, please!", Toast.LENGTH_LONG).show();
+                    return;
+                }
 
                 destination = destinationET.getText().toString();
                 //destination = placeName;
