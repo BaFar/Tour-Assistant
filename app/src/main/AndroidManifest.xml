@@ -38,15 +38,18 @@
             android:value="AIzaSyD9iVvMTKJ65Ov9nUb6oaHl2LQrH7VOS4c" />
 
         <activity android:name=".PlacePackage.PlaceActivity" />
-        <activity android:name=".CombinedWeather.WeatherActivity"></activity>
-        <receiver android:name=".ConnectivityReceiver"
+        <activity android:name=".CombinedWeather.WeatherActivity" />
+
+        <receiver
+            android:name=".ConnectivityReceiver"
             android:enabled="true"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
             </intent-filter>
-
         </receiver>
+
+        <activity android:name=".profile.ProfileActivity"></activity>
     </application>
 
 </manifest>

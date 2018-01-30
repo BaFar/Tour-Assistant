@@ -192,6 +192,7 @@ public class AddEventFragment extends Fragment implements View.OnClickListener{
                     createEvent.createEventClicked(destination,budget,fdate,tdate,lat,lon);
                     toDateBtn.setEnabled(false);
                     destinationET.setText("Click Here");
+                    budgetET.setText("");
                     fromDateBtn.setText("");
                     toDateBtn.setText("");
                 }

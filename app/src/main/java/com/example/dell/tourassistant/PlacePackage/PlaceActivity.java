@@ -131,7 +131,8 @@ public class PlaceActivity extends AppCompatActivity implements GoogleApiClient.
 
                     Location A = new Location("cureent place");
                     A.setLatitude(deslat);
-                    A.setLongitude(deslat);
+                    A.setLongitude(deslon);
+
                     Location B= new Location("Destination place");
 
                     for(int i=0; i<sz; i++){
@@ -144,6 +145,7 @@ public class PlaceActivity extends AppCompatActivity implements GoogleApiClient.
                         placeLon=result.getGeometry().getLocation().getLng();
                         B.setLatitude(placeLat);
                         B.setLongitude(placeLon);
+
                         distance = A.distanceTo(B);
                         try {
                             isOpen=result.getOpeningHours().getOpenNow();

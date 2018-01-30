@@ -17,6 +17,7 @@ public class PermissionUtil {
     public static final int CAMERA_REQUEST_CODE= 102;
     public static final int WRITE_EXTERNAL_STORAGE_REQUEST_CODE= 103;
     public static final int ACCESS_FINE_LOCATION_REQUEST_CODE = 104;
+
     public static final int APP_SETTINGS_REQUEST_CODE = 201;
 
      /*

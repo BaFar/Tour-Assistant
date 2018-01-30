@@ -24,6 +24,7 @@ import com.example.dell.tourassistant.ExtraHelper;
 import com.example.dell.tourassistant.LoginActivity;
 import com.example.dell.tourassistant.R;
 import com.example.dell.tourassistant.SignupActivity;
+import com.example.dell.tourassistant.profile.ProfileActivity;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -62,6 +63,7 @@ public class EventActivity extends AppCompatActivity implements
     private StorageReference mstorageRef;
 
     private BottomNavigationView mBottomNV;
+    private boolean isAllDeleted;
 
 
 
@@ -148,9 +150,25 @@ public class EventActivity extends AppCompatActivity implements
         // Handle item selection
         switch (item.getItemId()) {
             case R.id.profile:
+                startActivity(new Intent(this, ProfileActivity.class));
                 return true;
             case R.id.delete_acc:
-                deleteAccount();
+                new AlertDialog.Builder(this)
+                        .setTitle("Delete Account?")
+                        .setMessage("Deleting your account delete all of your content like picture and other data. Continue?")
+                        .setPositiveButton("Delete Account", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.cancel();
+                                deleteAccount();
+                            }
+                        }).setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.cancel();
+                    }
+                }).show();
+
                 return true;
             case R.id.logout:
                 auth.signOut();
@@ -164,31 +182,71 @@ public class EventActivity extends AppCompatActivity implements
                 return super.onOptionsItemSelected(item);
         }
     }
-    private void deleteAccount(){
-        final boolean[] shouldRemove = {false};
-        final boolean[] isAllDeleted = {true};
-
-        new AlertDialog.Builder(this)
-                .setTitle("Delete Account?")
-                .setMessage("Deleting your account delete all of your content like picture and other data. Continue?")
-                .setPositiveButton("Delete Account", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.cancel();
-                        shouldRemove[0] = true;
-                    }
-                }).setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.cancel();
-                shouldRemove[0] = false;
+    static public boolean deleteDirectory(File path) {
+        if( path.exists() ) {
+            File[] files = path.listFiles();
+            if (files == null) {
+                return true;
             }
-        }).show();
+            for(int i=0; i<files.length; i++) {
+                if(files[i].isDirectory()) {
+                    deleteDirectory(files[i]);
+                }
+                else {
+                    files[i].delete();
+                }
+            }
+        }
+        return( path.delete() );
+    }
+    private void deleteAccount(){
+        changeFlag(true);
 
-        if (!shouldRemove[0]) return;/*return from the method without removing account*/
+        StorageReference storageRef = null;
+        FirebaseStorage fstorage = FirebaseStorage.getInstance();
+
+        String eventName = null;
+        for (Event event: cEventList) {
+
+            eventName = event.getDestination();
+           ArrayList<Moment> momentList = new ArrayList<>();
+           momentList = event.getMomentList();
+           if (momentList != null){
+               int sz = momentList.size();
+               for (int i=0; i<sz; i++){
+                    storageRef = fstorage.getReferenceFromUrl(momentList.get(i).getDownloadUri());
+                    storageRef.delete().addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+
+                            changeFlag(false);
+                        }
+                    });
+               }
+           }
+           /*delete local storage*/
+            String root = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).toString();
+
+            File folder = new File(root+"/"+eventName);
+            boolean isLocalDeleted=   deleteDirectory(folder);
+
+            if (isLocalDeleted)
+            {
+                Log.d("delete","Local data deleted");
+
+            }
+            else {
+                Log.d("delete","can't delete Local data.");
+                Toast.makeText(this, "can't delete local data. Delete it manually", Toast.LENGTH_LONG).show();
+
+            }
+
+
+        }
+
 
         /*before removing user delete all data*/
-        DatabaseReference reference = databaseReference= FirebaseDatabase.getInstance().getReference().child("users").child(userId);
+        DatabaseReference reference = FirebaseDatabase.getInstance().getReference().child("users").child(userId);
 
         reference.removeValue().addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
@@ -199,28 +257,13 @@ public class EventActivity extends AppCompatActivity implements
         }).addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception e) {
-                Log.d("Delete","Firebase data deletion failed");
-                isAllDeleted[0] = false;
+                Log.d("Delete","Firebase data deletion failed: "+e.getMessage());
+               changeFlag(false);
             }
         });
-        StorageReference storageReference = FirebaseStorage.getInstance().getReference().child("users").child(userId);
-        storageReference.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
-            @Override
-            public void onSuccess(Void aVoid) {
-                Log.d("Delete","Firebase storage deleted successfully");
-
-            }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                Log.d("Delete","Firebase storage deletion failed");
-                isAllDeleted[0] = false;
-            }
-        });
-
 
         /*check all data deleted or not*/
-        if (!isAllDeleted[0]){
+        if (!isAllDeleted){
             Toast.makeText(this, "Sorry,data deletion failed. account can't be deleted now.", Toast.LENGTH_LONG).show();
             return;
         }
@@ -237,8 +280,14 @@ public class EventActivity extends AppCompatActivity implements
             @Override
             public void onFailure(@NonNull Exception e) {
 
+                Toast.makeText(EventActivity.this, e.getMessage(), Toast.LENGTH_LONG).show();
+                Log.d("Delete","User delete failed. "+e.getMessage());
             }
         });
+    }
+
+    void  changeFlag(boolean b){
+        isAllDeleted = b;
     }
     @Override
     public void createEventClicked(String destination, int budget, String fromDate, String toDate, double lattitude, double longitude) {
@@ -309,6 +358,8 @@ public class EventActivity extends AppCompatActivity implements
         File folder = new File(root+"/"+eventName);
         folder.mkdirs();
 
+
+
         File my_file = new File(folder,photoName+".png");
 
         try {
@@ -332,15 +383,16 @@ public class EventActivity extends AppCompatActivity implements
 
     }
 
-    private void backUpPhoto(String eventName, Uri photoPathUri,DatabaseReference dbRef, final int position, final Moment moment){
+    private void backUpPhoto(final String eventName, Uri photoPathUri, DatabaseReference dbRef, final int position, final Moment moment){
         String photoName = photoPathUri.getLastPathSegment();
         StorageReference photoRef = mstorageRef.child(eventName+"/photos/"+photoName);
 
         photoRef.putFile(photoPathUri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
             @Override
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+
                 Uri downloadUri = taskSnapshot.getDownloadUrl();
-                Log.d("uri","online backup successfull, updating to firebase");
+                Log.d("backup","online backup successfull, updating to firebase");
                 moment.setDownloadUri(downloadUri.toString());
                 Event event = cEventList.get(position);
                 int numberOfEvents = event.getMomentList().size();
@@ -349,7 +401,7 @@ public class EventActivity extends AppCompatActivity implements
                     if (time.equals(moment.getMomentTime())){
                         event.getMomentList().remove(numberOfEvents-1);
                     }
-                }
+                }/*hlloe*/
                 event.addMoment(moment);
                 databaseReference.setValue(event);
 
@@ -360,7 +412,6 @@ public class EventActivity extends AppCompatActivity implements
                 Log.d("backUpPhoto","photo backup failed: "+e.getMessage());
             }
         });
-
 
     }
 
@@ -387,7 +438,6 @@ public class EventActivity extends AppCompatActivity implements
         mBottomNV.setSelectedItemId(R.id.comming_event_menu);
         Toast.makeText(this, "event Deleted", Toast.LENGTH_SHORT).show();
 
-
     }
 
     public void onDataLoaded(ArrayList<Event> events) {
@@ -401,7 +451,6 @@ public class EventActivity extends AppCompatActivity implements
         ft.commit();
 
     }
-
 
     @Override
     public void onBackPressed() {
