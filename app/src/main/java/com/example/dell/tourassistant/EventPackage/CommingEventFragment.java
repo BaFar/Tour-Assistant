@@ -55,10 +55,10 @@ public class CommingEventFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         if (noOfEvents == 0) {
-            cEHText.setText("Your do not have any up comming Event");
+            cEHText.setText(R.string.no_running_events);
+            return;
 
-        } else {
-
+        }
             EventAdapter eventAdapter = new EventAdapter(getContext(),eventList);
             commingEventsLV.setAdapter(eventAdapter);
 
@@ -69,19 +69,19 @@ public class CommingEventFragment extends Fragment {
                     FragmentTransaction ft = fm.beginTransaction();
                     SingleEventFragment fragment = new SingleEventFragment();
                     Bundle bundle = new Bundle();
-                    bundle.putParcelable("single event",eventList.get(position));
-                    bundle.putInt("event position",position);
+                    bundle.putParcelable("single event", eventList.get(position));
+                    bundle.putInt("event position", position);
                     fragment.setArguments(bundle);
-                    ft.replace(R.id.eventFragmentContainer,fragment);
+                    ft.replace(R.id.eventFragmentContainer, fragment);
                     ft.addToBackStack(null);
                     ft.commit();
 
+
                 }
             });
-
-
-
-
-        }
     }
+
+
+
 }
+

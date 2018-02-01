@@ -89,6 +89,7 @@ public class SingleEventFragment extends Fragment implements View.OnClickListene
     //private Bitmap mBitmap;
     private EditText destinationET;
     private Bitmap rowImageBitmap;
+    private String isPassedEvent = null;
 
 
     public SingleEventFragment() {
@@ -111,6 +112,8 @@ public class SingleEventFragment extends Fragment implements View.OnClickListene
 
         event =  getArguments().getParcelable("single event");
         eventPosition = getArguments().getInt("event position");
+        isPassedEvent = (String) getArguments().get("pastEventOrNOt");
+
         eventKey = event.getKey();
 
 
@@ -149,6 +152,11 @@ public class SingleEventFragment extends Fragment implements View.OnClickListene
         nearByBtn.setOnClickListener(this);
         weatherBtn.setOnClickListener(this);
 
+        if (isPassedEvent!=null && isPassedEvent.equals("past")){/*if null then terminated in 1st check ,safe from error*/
+            addExpenseBtn.setVisibility(View.GONE);
+            addMomentBtn.setVisibility(View.GONE);
+            editBtn.setVisibility(View.GONE);
+        }
 
         return v;
     }

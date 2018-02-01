@@ -35,7 +35,11 @@ public class ProfileActivity extends AppCompatActivity implements ProfileViewFra
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         userID = user.getUid();
         userName = user.getDisplayName();
-        profilePhotoRemoteUri = user.getPhotoUrl().toString();
+        if (user.getPhotoUrl()!=null){
+
+            profilePhotoRemoteUri = user.getPhotoUrl().toString();
+        }
+
         userEmail = user.getEmail();
 
         dr = FirebaseDatabase.getInstance().getReference()

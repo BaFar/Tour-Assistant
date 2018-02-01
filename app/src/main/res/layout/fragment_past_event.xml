@@ -4,10 +4,21 @@
     android:layout_height="match_parent"
     tools:context="com.example.dell.tourassistant.EventPackage.PastEventFragment">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
+        android:orientation="vertical">
+        <TextView
+            android:id="@+id/past_events_heading"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:text="Past Events"/>
+        <ListView
+            android:id="@+id/past_event_LV"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
 
+        </ListView>
+    </LinearLayout>
 </FrameLayout>

@@ -1,9 +1,12 @@
 package com.example.dell.tourassistant;
 
+import android.util.Log;
 import android.widget.Switch;
 
 import java.text.SimpleDateFormat;
+import java.text.ParseException;
 import java.util.Calendar;
+import java.util.Date;
 
 /**
  * Created by DELL on 10/26/2017.
@@ -11,15 +14,37 @@ import java.util.Calendar;
 
 public class ExtraHelper {
 
+   public static Calendar c = Calendar.getInstance();
 
     public static String getCurrentTime() {
         String currentTime = null;
-        Calendar c = Calendar.getInstance();
-        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        currentTime = df.format(c.getTime());
-// Now formattedDate have current date/time
 
+        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        currentTime = df.format(c.getTime());// Now formattedDate have current date/time
         return currentTime;
+    }
+    public static boolean compareTwoDate(String endDate){
+
+        boolean ispassed= false;
+        SimpleDateFormat df = new SimpleDateFormat("dd/MM/yyyy");
+        String cdate= df.format(c.getTime());
+        Log.d("checkCurrentDate",cdate);
+        Log.d("checkCurrentDate",endDate);
+        Date currentDate = null;
+        Date eDate = null;
+
+        try {
+             currentDate = df.parse(cdate);
+             eDate = df.parse(endDate);
+            if (eDate.compareTo(currentDate) < 0)    ispassed = true;
+
+        } catch (ParseException e) {
+            e.printStackTrace();
+            Log.d("DateCompare","date compare failed: "+e.getMessage());
+        }
+
+        return ispassed;
+
     }
 
     public static int getIconId(String code) {

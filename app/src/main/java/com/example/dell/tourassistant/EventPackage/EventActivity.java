@@ -74,6 +74,7 @@ public class EventActivity extends AppCompatActivity implements
 
         mBottomNV = (BottomNavigationView) findViewById(R.id.navigation);
         cEventList = new ArrayList<Event>();
+        pEventList = new ArrayList<Event>();
 
          user = auth.getCurrentUser();
         userId = user.getUid();
@@ -87,9 +88,12 @@ public class EventActivity extends AppCompatActivity implements
                 for(DataSnapshot ds: dataSnapshot.getChildren()){
                     Event event = new Event();
                     event = ds.getValue(Event.class);
-                    cEventList.add(event);
-
+                    String endDate = event.getToDate();
+                    boolean ispassed = ExtraHelper.compareTwoDate(endDate);
+                    if (ispassed) pEventList.add(event);
+                    else cEventList.add(event);
                 }
+
                 onDataLoaded(cEventList);
             }
 
@@ -102,22 +106,25 @@ public class EventActivity extends AppCompatActivity implements
         });
 
 
+
+
         mBottomNV.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 FragmentManager manager = getSupportFragmentManager();
                 FragmentTransaction transaction = manager.beginTransaction();
                 Fragment fragment=null;
-
+                Bundle bundle = new Bundle();
                 switch (item.getItemId()){
                     case R.id.comming_event_menu:
                         fragment = new CommingEventFragment();
-                        Bundle bundle = new Bundle();
                         bundle.putParcelableArrayList("comming_events",cEventList);
                         fragment.setArguments(bundle);
                         break;
                     case R.id.past_event_menu:
                         fragment = new PastEventFragment();
+                        bundle.putParcelableArrayList("past_ events",pEventList);
+                        fragment.setArguments(bundle);
                         break;
                     case R.id.add_event_menu:
                         fragment = new AddEventFragment();
