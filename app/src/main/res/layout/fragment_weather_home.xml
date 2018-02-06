@@ -2,9 +2,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context="com.example.dell.tourassistant.CombinedWeather.WeatherHomeFragment">
 
-    <RelativeLayout
+    <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
@@ -12,75 +13,85 @@
             android:id="@+id/show_current_temp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:layout_alignParentLeft="true"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="32dp"
             android:text="45"
-            android:textSize="150sp" />
+            android:textSize="80sp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/date_time"
+            android:layout_marginLeft="16dp" />
 
 
         <LinearLayout
-            android:id="@+id/show_current_weather_type"
+            android:id="@+id/weather_type_linearLayout"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_above="@id/show_current_temp"
-            android:layout_alignParentLeft="true"
-            android:gravity="center"
-            android:orientation="horizontal">
+            android:layout_marginEnd="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="52dp"
+            android:orientation="horizontal"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/show_current_temp">
 
             <ImageView
                 android:id="@+id/show_current_weather_type_icon"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@mipmap/ic_launcher" />
+                app:srcCompat="@mipmap/ic_launcher"
+                tools:layout_editor_absoluteX="0dp"
+                tools:layout_editor_absoluteY="239dp" />
 
             <TextView
-                android:id="@+id/show_current_weather_type_text"
+                android:id="@+id/current_weather_description"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Cloudy"
-                android:textColor="#fff" />
-
-            <TextView
-                android:id="@+id/show_sunrise"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Sunrise"
-                android:textColor="#fff" />
-
-            <TextView
-                android:id="@+id/show_sunset"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Sunset"
-                android:textColor="#fff" />
-
-            <TextView
-                android:id="@+id/show_place_name"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Dhaka Kawran Bazar" />
-
-            <TextView
-                android:id="@+id/show_date_time"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="29/10/17: 10:30PM" />
+                android:layout_gravity="bottom"
+                android:text="partly Cloudy"
+                android:textSize="16sp" />
         </LinearLayout>
 
         <EditText
             android:id="@+id/place_selector"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="select Place"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentTop="true"
-            />
+            android:layout_marginEnd="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:ems="10"
+            android:inputType="text"
+            android:text="Name"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/city_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:text=""
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.501"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/place_selector" />
+
+        <TextView
+            android:id="@+id/date_time"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="20dp"
+            android:text=""
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/city_name" />
 
 
-
-
-
-    </RelativeLayout>
+    </android.support.constraint.ConstraintLayout>
 </FrameLayout>
 
 

@@ -2,8 +2,6 @@ package com.example.dell.tourassistant.CombinedWeather;
 
 import android.app.ProgressDialog;
 import android.content.SharedPreferences;
-import android.os.Parcelable;
-import android.preference.Preference;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
@@ -11,7 +9,6 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.LinearLayoutManager;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
@@ -21,13 +18,10 @@ import android.widget.Toast;
 
 import com.example.dell.tourassistant.CombinedWeather.CurrentWeatherPackage.CurrentWeather;
 import com.example.dell.tourassistant.CombinedWeather.CurrentWeatherPackage.CurrentWeatherClient;
-import com.example.dell.tourassistant.CombinedWeather.CurrentWeatherPackage.Weather;
 import com.example.dell.tourassistant.CombinedWeather.DailyWeather.CustomDailyWeather;
-import com.example.dell.tourassistant.CombinedWeather.DailyWeather.DailyForecastAdapter;
 import com.example.dell.tourassistant.CombinedWeather.DailyWeather.DailyWeather;
 import com.example.dell.tourassistant.CombinedWeather.DailyWeather.DailyWeatherClient;
 import com.example.dell.tourassistant.CombinedWeather.HourlyWeather.CustomHourlyWeather;
-import com.example.dell.tourassistant.CombinedWeather.HourlyWeather.HourlyForecastAdapter;
 import com.example.dell.tourassistant.CombinedWeather.HourlyWeather.HourlyWeather;
 import com.example.dell.tourassistant.CombinedWeather.HourlyWeather.HourlyWeatherClient;
 import com.example.dell.tourassistant.ConnectivityReceiver;
@@ -41,8 +35,16 @@ import retrofit2.Response;
 
 public class WeatherActivity extends AppCompatActivity implements WeatherHomeFragment.OnPlacePickListener{
 
-   // private FragmentManager fm = getSupportFragmentManager();
-   // private FragmentTransaction ft = fm.beginTransaction();
+   public  static final String KEY_FEELS_LIKE = "feels_like",
+           KEY_HUMIDITY  = "humidity",
+           KEY_VISIBILITY  = "visibility",
+           KEY_UV_INDEX  = "uv_index",
+           KEY_WIND  = "wind",
+           KEY_PRESSURE  = "pressure",
+           KEY_SUNRISE  = "sunrise",
+           KEY_SUNSET  = "sunset",
+           KEY_WEATHER_ICON ="weather_icon";
+
     private BottomNavigationView navigationView;
     private String cityName,dateTime;
     private double temp;
@@ -78,13 +80,8 @@ public class WeatherActivity extends AppCompatActivity implements WeatherHomeFra
             Log.d("weatherActivity","not lat lon recveived");
         }
 
-
-
     final double iLat = lat;
     final double iLon = lon;
-
-
-
 
         navigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
             @Override
@@ -96,14 +93,9 @@ public class WeatherActivity extends AppCompatActivity implements WeatherHomeFra
                 Bundle innerBundle = new Bundle();
                 switch (item.getItemId()){
                     case R.id.nav_current:
-
                        innerBundle.putString("dateTime",currentWeather.getData().get(0).getDatetime());
                        innerBundle.putString("city_name",currentWeather.getData().get(0).getCityName());
                        innerBundle.putDouble("current_temp",currentWeather.getData().get(0).getTemp());
-                       innerBundle.putString("sunrise",currentWeather.getData().get(0).getSunrise());
-                       innerBundle.putString("sunset",currentWeather.getData().get(0).getSunset());
-                       innerBundle.putDouble("windspeed",currentWeather.getData().get(0).getWindSpd());
-                       innerBundle.putDouble("visibility",currentWeather.getData().get(0).getVis());
                        innerBundle.putString("icon_code",currentWeather.getData().get(0).getWeather().getIcon());
                        innerBundle.putString("description",currentWeather.getData().get(0).getWeather().getDescription());
 
@@ -112,9 +104,7 @@ public class WeatherActivity extends AppCompatActivity implements WeatherHomeFra
                         break;
                     case R.id.nav_details:
                         fragment = new DetailsFragment();
-                        innerBundle.putString("cityname",currentWeather.getData().get(0).getCityName());
-                        innerBundle.putDouble("temperature",currentWeather.getData().get(0).getTemp());
-                        innerBundle.putString("datetime",currentWeather.getData().get(0).getDatetime());
+                       innerBundle =  setWeatherDetailsInfo();
                         fragment.setArguments(innerBundle);
                         break;
                     case R.id.nav_forecast:
@@ -181,6 +171,23 @@ public class WeatherActivity extends AppCompatActivity implements WeatherHomeFra
 
     }
 
+    private Bundle setWeatherDetailsInfo() {
+
+
+        Bundle bundle = new Bundle();
+        bundle.putDouble(KEY_FEELS_LIKE,currentWeather.getData().get(0).getAppTemp());
+        bundle.putDouble(KEY_HUMIDITY,currentWeather.getData().get(0).getRh());
+        bundle.putDouble(KEY_VISIBILITY,currentWeather.getData().get(0).getVis());
+        bundle.putDouble(KEY_UV_INDEX,currentWeather.getData().get(0).getUv());
+        bundle.putDouble(KEY_WIND,currentWeather.getData().get(0).getWindSpd());
+        bundle.putDouble(KEY_PRESSURE,currentWeather.getData().get(0).getPres());
+        bundle.putString(KEY_SUNRISE,currentWeather.getData().get(0).getSunrise());
+        bundle.putString(KEY_SUNSET,currentWeather.getData().get(0).getSunset());
+        bundle.putString(KEY_WEATHER_ICON,currentWeather.getData().get(0).getWeather().getIcon());
+
+        return bundle;
+    }
+
 
     private void collectCurrentWeather(double lat, double lon) {
 
@@ -201,17 +208,12 @@ public class WeatherActivity extends AppCompatActivity implements WeatherHomeFra
                       Toast.makeText(WeatherActivity.this, "200 OK", Toast.LENGTH_SHORT).show();
                     currentWeather = response.body();
                     final Bundle bundle= new Bundle();
+
                     bundle.putString("dateTime",currentWeather.getData().get(0).getDatetime());
                     bundle.putString("city_name",currentWeather.getData().get(0).getCityName());
                     bundle.putDouble("current_temp",currentWeather.getData().get(0).getTemp());
-                    bundle.putString("sunrise",currentWeather.getData().get(0).getSunrise());
-                    bundle.putString("sunset",currentWeather.getData().get(0).getSunset());
-                    bundle.putDouble("windspeed",currentWeather.getData().get(0).getWindSpd());
-                    bundle.putDouble("visibility",currentWeather.getData().get(0).getVis());
                     bundle.putString("icon_code",currentWeather.getData().get(0).getWeather().getIcon());
                     bundle.putString("description",currentWeather.getData().get(0).getWeather().getDescription());
-
-
 
                    // fm.popBackStack();
                     FragmentManager fragManager = getSupportFragmentManager();
@@ -225,14 +227,11 @@ public class WeatherActivity extends AppCompatActivity implements WeatherHomeFra
                         Log.d("clearBackStack",e.getMessage());
                     }
 
-
-
                     WeatherHomeFragment weatherHomeFragment = new WeatherHomeFragment();
                     weatherHomeFragment.setArguments(bundle);
                     fragTransaction.add(R.id.weather_fragment_coontainer,weatherHomeFragment);
                     fragTransaction.commit();
                     navigationView.setSelectedItemId(R.id.nav_current);
-
 
 
                 }

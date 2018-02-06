@@ -4,4 +4,10 @@
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
     <color name="forecastTextColor">#ffd</color>
+    <color name="white">#ffffff</color>
+    <color name="purple_mountains_majesty">#9577bc</color>
+    <color name="red">#FF0000</color>
+    <color name="pippin">#FFDDDD</color>
+    <color name="black">#000000</color>
+    <color name="niagara">#059f9a</color>
 </resources>

@@ -46,6 +46,24 @@ public class ExtraHelper {
         return ispassed;
 
     }
+    public static String getDayName(String stringDate){
+        if (stringDate.length() > 10){
+
+        }
+        SimpleDateFormat inFormat = new SimpleDateFormat("yyyy-MM-dd");//dd-MM-yyyy
+        Date date = null;
+        try {
+            date = inFormat.parse(stringDate);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        SimpleDateFormat outFormat = new SimpleDateFormat("EEEE");
+        String dayName = outFormat.format(date);
+
+        return dayName;
+
+    }
 
     public static int getIconId(String code) {
 

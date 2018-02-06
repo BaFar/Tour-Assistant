@@ -49,25 +49,13 @@ public class DailyForecastAdapter extends ArrayAdapter<CustomDailyWeather>{
          lowTempTV = (TextView) convertView.findViewById(R.id.show_low_temp);
         weatherIconIV = (ImageView) convertView.findViewById(R.id.show_weather_icon);
 
-        String input = dailyDataList.get(position).getDate();
-        SimpleDateFormat inFormat = new SimpleDateFormat("yyyy-MM-dd");//dd-MM-yyyy
-        Date date = null;
-        try {
-            date = inFormat.parse(input);
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-
-        //CustomDailyWeather dweather = new CustomDailyWeather();
-
-
-        SimpleDateFormat outFormat = new SimpleDateFormat("EEEE");
-        String goal = outFormat.format(date);
+        String stringDate = dailyDataList.get(position).getDate();
+        String dayName = ExtraHelper.getDayName(stringDate);
 
         maxtemp = String.valueOf(dailyDataList.get(position).getMaxTemp());
         mintemp = String.valueOf(dailyDataList.get(position).getMinTemp());
 
-        dayTV.setText(goal+"\n"+dailyDataList.get(position).getDate());
+        dayTV.setText(dayName+"\n"+dailyDataList.get(position).getDate());
         highTempTV.setText(maxtemp+(char)0x00B0);               /*add unit later*/
         lowTempTV.setText(mintemp+(char)0x00B0);
         int iconCode = ExtraHelper.getIconId(dailyDataList.get(position).getIconCode());

@@ -17,11 +17,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.dell.tourassistant.CombinedWeather.CurrentWeatherPackage.CurrentWeather;
-import com.example.dell.tourassistant.CombinedWeather.CurrentWeatherPackage.CurrentWeatherClient;
-import com.example.dell.tourassistant.CombinedWeather.CurrentWeatherPackage.Datum;
 import com.example.dell.tourassistant.ConnectivityReceiver;
 import com.example.dell.tourassistant.ExtraHelper;
-import com.example.dell.tourassistant.LoginActivity;
 import com.example.dell.tourassistant.R;
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
 import com.google.android.gms.common.GooglePlayServicesRepairableException;
@@ -29,12 +26,6 @@ import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.ui.PlacePicker;
 import com.google.android.gms.maps.model.LatLng;
-
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
-
-import static android.content.Context.MODE_PRIVATE;
 
 
 public class WeatherHomeFragment extends Fragment {
@@ -44,14 +35,13 @@ public class WeatherHomeFragment extends Fragment {
         // Required empty public constructor
     }
 
-    private TextView currentTempTV, weatherTypeTV, sunsetTV, sunriseTV, cityNameTV, dateTimeTV;
+    private TextView currentTempTV, descriptionTV,cityNameTV,dateTimeTV;
     private EditText placeSelectorET;
-    private ImageView minTempIV, maxTempIV, weatherTypeIV;
+    private ImageView  weatherTypeIV;
 
-    String lowTemp, highTemp, weatherCode, cityName, chill, speed, humidity, rising, pressure, sunrise, sunset,
-            weatherText, pubdate, weatherType, iconCode, dateTime, placeName;
+    String  cityName,iconCode, dateTime, placeName, description;
     private CurrentWeather weather;
-    private Double windspeed, visibility, temp, lat, lon;
+    private Double temp, lat, lon;
        private OnPlacePickListener placePickListener;
     final int PLACE_PICKER_REQUEST_CODE = 1;
     private SharedPreferences preferences;
@@ -64,33 +54,25 @@ public class WeatherHomeFragment extends Fragment {
          placeSelectorET = (EditText) view.findViewById(R.id.place_selector);
 
 
-        lat = 90.4786;
-        lon = 23.81435;
+        //lat = 90.4786;
+        //lon = 23.81435;
 
-        preferences = getActivity().getSharedPreferences("latlonSP", MODE_PRIVATE);
-
+        preferences = getActivity().getSharedPreferences("latlonSP", Context.MODE_PRIVATE);
 
         currentTempTV = (TextView) view.findViewById(R.id.show_current_temp);
-        sunsetTV = (TextView) view.findViewById(R.id.show_sunset);
-        sunriseTV = (TextView) view.findViewById(R.id.show_sunrise);
-        cityNameTV = (TextView) view.findViewById(R.id.show_place_name);
-        dateTimeTV = (TextView) view.findViewById(R.id.show_date_time);
-        weatherTypeTV = (TextView) view.findViewById(R.id.show_current_weather_type_text);
         weatherTypeIV = (ImageView) view.findViewById(R.id.show_current_weather_type_icon);
+        descriptionTV = (TextView) view.findViewById(R.id.current_weather_description);
+        cityNameTV = (TextView) view.findViewById(R.id.city_name);
+        dateTimeTV = (TextView) view.findViewById(R.id.date_time);
+
 
         Bundle resultBundle = getArguments();
 
         dateTime = resultBundle.getString("dateTime");
         cityName = resultBundle.getString("city_name");
         temp = resultBundle.getDouble("current_temp");
-        sunrise = resultBundle.getString("sunrise");
-        sunset = resultBundle.getString("sunset");
-        windspeed = resultBundle.getDouble("windspeed");
-        visibility = resultBundle.getDouble("visibility");
         iconCode = resultBundle.getString("icon_code");
-        weatherType = resultBundle.getString("description");
-
-        setDatatoView();
+        description = resultBundle.getString("description");
 
 
         // weather = new CurrentWeather();
@@ -114,25 +96,18 @@ public class WeatherHomeFragment extends Fragment {
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
-    }
-
-
-    private void setDatatoView() {
-
-
         int weatherIconCode = ExtraHelper.getIconId(iconCode);
 
+        String dayName = ExtraHelper.getDayName(dateTime);
+        String dayHour = ExtraHelper.getHour(dateTime);
         cityNameTV.setText(cityName);
-        dateTimeTV.setText(dateTime);
-        sunriseTV.setText(sunrise);
-        sunsetTV.setText(sunset);
-        currentTempTV.setText(String.valueOf(temp) + (char) 0x00B0);/* add unit of temperature later*/
-        weatherTypeTV.setText(weatherType);
+        dateTimeTV.setText(dayName+" "+dayHour);
+        currentTempTV.setText(String.valueOf(temp) + (char) 0x00B0+"C");/* add dynamic temperature unit later*/
+        descriptionTV.setText(description);
         weatherTypeIV.setImageResource(weatherIconCode);
-
-
     }
+
+
     public void selectPlace() {
 
 
@@ -144,16 +119,16 @@ public class WeatherHomeFragment extends Fragment {
             startActivityForResult(builder.build(getActivity()), PLACE_PICKER_REQUEST_CODE);
         } catch (GooglePlayServicesRepairableException e) {
             // TODO: Handle the error.
-            Log.d("exception","repairable");
+            Log.d("exception","repairable "+e.getMessage());
         } catch (GooglePlayServicesNotAvailableException e) {
             // TODO: Handle the error.
-            Log.d("exception","repairable");
+            Log.d("exception","repairable "+e.getMessage());
         }
 
     }
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
 
-        String TAG ="on result back";
+        String PLACE_SELECT_RESULT_TAG ="on place result back";
         if (requestCode == PLACE_PICKER_REQUEST_CODE) {
             if (resultCode == Activity.RESULT_OK) {
                 Place place = PlacePicker.getPlace(getActivity(), data);
@@ -174,7 +149,8 @@ public class WeatherHomeFragment extends Fragment {
             } else if (resultCode == PlacePicker.RESULT_ERROR) {
                 Status status = PlacePicker.getStatus(getActivity(), data);
                 // TODO: Handle the error.
-                Log.i(TAG, status.getStatusMessage());
+                Log.i(PLACE_SELECT_RESULT_TAG, status.getStatusMessage());
+
 
             } else if (resultCode == Activity.RESULT_CANCELED) {
                 // The user canceled the operation.
