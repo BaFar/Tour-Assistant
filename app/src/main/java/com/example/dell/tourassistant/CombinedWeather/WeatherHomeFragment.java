@@ -98,8 +98,9 @@ public class WeatherHomeFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         int weatherIconCode = ExtraHelper.getIconId(iconCode);
 
-        String dayName = ExtraHelper.getDayName(dateTime);
-        String dayHour = ExtraHelper.getHour(dateTime);
+        String dayName = ExtraHelper.getDayName(dateTime, WeatherActivity.TIME_ZONE_ID);
+        String str = ExtraHelper.getHour(dateTime, WeatherActivity.TIME_ZONE_ID);
+        String dayHour = str.substring(11);
         cityNameTV.setText(cityName);
         dateTimeTV.setText(dayName+" "+dayHour);
         currentTempTV.setText(String.valueOf(temp) + (char) 0x00B0+"C");/* add dynamic temperature unit later*/

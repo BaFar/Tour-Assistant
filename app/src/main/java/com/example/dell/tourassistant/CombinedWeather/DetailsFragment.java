@@ -4,6 +4,7 @@ package com.example.dell.tourassistant.CombinedWeather;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,6 +14,11 @@ import android.widget.Toast;
 
 import com.example.dell.tourassistant.ExtraHelper;
 import com.example.dell.tourassistant.R;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.TimeZone;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -67,6 +73,23 @@ public class DetailsFragment extends Fragment {
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        SimpleDateFormat parser = new SimpleDateFormat("HH:mm");
+        parser.setTimeZone(TimeZone.getTimeZone("UTC"));
+        SimpleDateFormat formatter = new SimpleDateFormat("HH:mm a");
+        formatter.setTimeZone(TimeZone.getTimeZone(WeatherActivity.TIME_ZONE_ID));
+
+        Date parsedRise = null;
+        Date parsedSet = null;
+        try {
+            parsedRise = parser.parse(sunrise);
+            parsedSet = parser.parse(sunset);
+        } catch (ParseException e) {
+            e.printStackTrace();
+            Log.d("time_format_error", e.getMessage());
+        }
+        sunrise = formatter.format(parsedRise);
+        sunset = formatter.format(parsedSet);
 
         weather_icon_id = ExtraHelper.getIconId(weather_icon_code);
 

@@ -10,6 +10,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -34,7 +35,7 @@ import retrofit2.Response;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class ForecastFragment extends Fragment {
+public class ForecastFragment extends Fragment  implements View.OnClickListener{
 
 
     public ForecastFragment() {
@@ -43,12 +44,13 @@ public class ForecastFragment extends Fragment {
 
 
     private double lat,lon;
-    //private List<Datum> hourlyDataList;
-   // private List<com.example.dell.tourassistant.CombinedWeather.DailyWeather.Datum> dailyDataList;
+   private Button fiveDayBtn,tenDayBtn;
     private RecyclerView hourlyRV;
     private ListView dailyLV;
     private ArrayList<CustomDailyWeather> dailyDatalist;
     private ArrayList<CustomHourlyWeather> hourlyDataList;
+    private ArrayList<CustomDailyWeather> fiveDayDailyData;
+    private ArrayList<CustomDailyWeather> tenDayDailyData;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -56,15 +58,27 @@ public class ForecastFragment extends Fragment {
         View view =  inflater.inflate(R.layout.fragment_forecast, container, false);
         hourlyRV = (RecyclerView) view.findViewById(R.id.show_forecast_per_hour);
         dailyLV = (ListView) view.findViewById(R.id.show_forecast_per_day);
+        fiveDayBtn = (Button) view.findViewById(R.id.fiveDayBtn);
+        tenDayBtn = (Button) view.findViewById(R.id.tenDayBtn);
 
         Bundle bundle = getArguments();
         dailyDatalist = bundle.getParcelableArrayList("dailydatalist");
         hourlyDataList = bundle.getParcelableArrayList("hourlydatalist");
 
+        fiveDayDailyData = new ArrayList<>();
+        tenDayDailyData= new ArrayList<>();
+        for (int i=0; i<5; i++){
+            fiveDayDailyData.add(dailyDatalist.get(i));
+        }
+        for (int i=0; i<10; i++){
+            tenDayDailyData.add(dailyDatalist.get(i));
+        }
 
-//        Log.d("ForecastDaily","daily data list size is: "+dailyDatalist.size());
+        fiveDayBtn.setOnClickListener(this);
+        tenDayBtn.setOnClickListener(this);
 
-        DailyForecastAdapter dailyAdapter = new DailyForecastAdapter(getActivity(),dailyDatalist);
+
+        DailyForecastAdapter dailyAdapter = new DailyForecastAdapter(getActivity(),fiveDayDailyData);
         dailyLV.setAdapter(dailyAdapter);
 
         HourlyForecastAdapter hourlyForecastAdapter = new HourlyForecastAdapter(getActivity(),hourlyDataList);
@@ -77,4 +91,20 @@ public class ForecastFragment extends Fragment {
         return view;
     }
 
+    @Override
+    public void onClick(View v) {
+        DailyForecastAdapter dailyAdapter=null;
+        switch (v.getId()){
+            case R.id.fiveDayBtn:
+                dailyAdapter = new DailyForecastAdapter(getActivity(),fiveDayDailyData);
+                dailyLV.setAdapter(dailyAdapter);
+                break;
+            case R.id.tenDayBtn:
+                 dailyAdapter = new DailyForecastAdapter(getActivity(),tenDayDailyData);
+                dailyLV.setAdapter(dailyAdapter);
+                break;
+            default:
+
+        }
+    }
 }

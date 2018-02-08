@@ -11,6 +11,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.dell.tourassistant.CombinedWeather.HourlyWeather.CustomHourlyWeather;
+import com.example.dell.tourassistant.CombinedWeather.WeatherActivity;
 import com.example.dell.tourassistant.ExtraHelper;
 import com.example.dell.tourassistant.R;
 
@@ -50,7 +51,7 @@ public class DailyForecastAdapter extends ArrayAdapter<CustomDailyWeather>{
         weatherIconIV = (ImageView) convertView.findViewById(R.id.show_weather_icon);
 
         String stringDate = dailyDataList.get(position).getDate();
-        String dayName = ExtraHelper.getDayName(stringDate);
+        String dayName = ExtraHelper.getDayName(stringDate, WeatherActivity.TIME_ZONE_ID);
 
         maxtemp = String.valueOf(dailyDataList.get(position).getMaxTemp());
         mintemp = String.valueOf(dailyDataList.get(position).getMinTemp());

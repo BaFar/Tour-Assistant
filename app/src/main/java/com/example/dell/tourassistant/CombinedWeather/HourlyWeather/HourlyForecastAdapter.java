@@ -12,6 +12,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.example.dell.tourassistant.CombinedWeather.WeatherActivity;
 import com.example.dell.tourassistant.ExtraHelper;
 import com.example.dell.tourassistant.R;
 
@@ -40,9 +41,11 @@ public class HourlyForecastAdapter extends RecyclerView.Adapter<HourlyForecastAd
 
     @Override
     public void onBindViewHolder(HourlyDataViewHolder holder, int position) {
-        String time = hourlyDataList.get(position).getTime();
+
+        String localTime = ExtraHelper.getHour(hourlyDataList.get(position).getTime(), WeatherActivity.TIME_ZONE_ID);
+        localTime = localTime.substring(11);
         holder.tempTV.setText(String.valueOf(hourlyDataList.get(position).getTemp())+(char)0x00B0+"C");
-        holder.timeTV.setText(ExtraHelper.getHour(time));
+        holder.timeTV.setText(localTime);
         holder.iconIV.setImageResource(ExtraHelper.getIconId(hourlyDataList.get(position).getIconCode()));
 
 

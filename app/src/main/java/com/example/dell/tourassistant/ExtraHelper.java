@@ -1,12 +1,12 @@
 package com.example.dell.tourassistant;
 
 import android.util.Log;
-import android.widget.Switch;
 
 import java.text.SimpleDateFormat;
 import java.text.ParseException;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.TimeZone;
 
 /**
  * Created by DELL on 10/26/2017.
@@ -46,23 +46,28 @@ public class ExtraHelper {
         return ispassed;
 
     }
-    public static String getDayName(String stringDate){
+    public static String getDayName(String stringDate, String timeZoneID){
         if (stringDate.length() > 10){
 
         }
-        SimpleDateFormat inFormat = new SimpleDateFormat("yyyy-MM-dd");//dd-MM-yyyy
-        Date date = null;
+      //  SimpleDateFormat inFormat = new SimpleDateFormat("yyyy-MM-dd");//dd-MM-yyyy
+
+        SimpleDateFormat parser = new SimpleDateFormat("yyyy-MM-dd");
+        parser.setTimeZone(TimeZone.getTimeZone("UTC"));
+        Date parsed = null;
         try {
-            date = inFormat.parse(stringDate);
+            parsed = parser.parse(stringDate);
         } catch (ParseException e) {
             e.printStackTrace();
         }
-
         SimpleDateFormat outFormat = new SimpleDateFormat("EEEE");
-        String dayName = outFormat.format(date);
+        outFormat.setTimeZone(TimeZone.getTimeZone(timeZoneID));
+        String dayName = outFormat.format(parsed);
+
+        SimpleDateFormat formatter = new SimpleDateFormat("dd-MMM-yyyy");
+          String date= formatter.format(parsed);
 
         return dayName;
-
     }
 
     public static int getIconId(String code) {
@@ -200,26 +205,22 @@ public class ExtraHelper {
         return R.mipmap.ic_launcher_round;
     }
 
-    public static String getHour(String time) {
-        time = "" + time.charAt(11) + time.charAt(12);
-        int i = Integer.parseInt(time);
-        i++;
-        String timeSuf = "";
-        if (i < 12) {
-            timeSuf = "AM";
-        } else if (i == 24) {
-            timeSuf = "AM";
-            i = 12;
-        } else if (i == 12) {
-            timeSuf = "PM";
-        } else {
-            timeSuf = "PM";
-            i = i % 12;
+    public static String getHour(String utcTtime, String timeZoneID) {
+
+        SimpleDateFormat parser = new SimpleDateFormat("yyyy-MM-dd:HH");
+        parser.setTimeZone(TimeZone.getTimeZone("UTC"));
+        Date parsed = null;
+        try {
+            parsed = parser.parse(utcTtime);
+        } catch (ParseException e) {
+            e.printStackTrace();
         }
 
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd:HH a");
+        formatter.setTimeZone(TimeZone.getTimeZone(timeZoneID));
+        utcTtime = formatter.format(parsed);
 
-        time = String.valueOf(i) + timeSuf;
-        return time;
+        return utcTtime;
     }
 
     public static int getCatagoryIcon(String catagory) {

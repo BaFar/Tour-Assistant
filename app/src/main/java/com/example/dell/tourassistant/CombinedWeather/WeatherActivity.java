@@ -28,6 +28,7 @@ import com.example.dell.tourassistant.ConnectivityReceiver;
 import com.example.dell.tourassistant.R;
 
 import java.util.ArrayList;
+import java.util.TimeZone;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -44,6 +45,7 @@ public class WeatherActivity extends AppCompatActivity implements WeatherHomeFra
            KEY_SUNRISE  = "sunrise",
            KEY_SUNSET  = "sunset",
            KEY_WEATHER_ICON ="weather_icon";
+    public static String TIME_ZONE_ID = TimeZone.getDefault().getID();
 
     private BottomNavigationView navigationView;
     private String cityName,dateTime;
@@ -234,6 +236,7 @@ public class WeatherActivity extends AppCompatActivity implements WeatherHomeFra
                     navigationView.setSelectedItemId(R.id.nav_current);
 
 
+                    TIME_ZONE_ID = currentWeather.getData().get(0).getTimezone();
                 }
                 else if(response.code()==304){
                     Toast.makeText(WeatherActivity.this, "304 Not Modified", Toast.LENGTH_SHORT).show();
